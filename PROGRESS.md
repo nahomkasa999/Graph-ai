@@ -12,3 +12,6 @@
   GitHub Actions passed on Node 22.18 and 24.
 - M4: Production React Flow viewer with ELK layout, four focus levels, inline expansion, URL navigation, keyboard search and source inspection.
   Playwright verified four-level hash navigation, source display, browser history, inline expansion and keyboard search.
+  GitHub Actions passed on Node 22.18 and 24. The browser suite passed on Node 22.18.
+- M5: Live stats, node and edge pulses, error markers, recent traces, trace replay, duration breakdown and SSE reconnect.
+  Chromium verified six live badges, a real validation error, trace replay, stats after reload and automatic reconnect.

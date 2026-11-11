@@ -144,3 +144,19 @@ test("a real notes request streams six mapped function steps in under 500 ms", a
     await rm(temp, { recursive: true, force: true });
   }
 }, 15_000);
+
+test("server shutdown closes a connected event stream", async () => {
+  await analyze(demo);
+  const server = await serveFlowlens(demo, { port: 0 });
+  const controller = new AbortController();
+  try {
+    const response = await fetch(`http://127.0.0.1:${server.port}/api/stream`, {
+      signal: controller.signal,
+    });
+    const stream = response.text();
+    await server.close();
+    expect(await stream).toContain(": connected");
+  } finally {
+    controller.abort();
+  }
+});

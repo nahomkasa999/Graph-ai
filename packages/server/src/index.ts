@@ -74,6 +74,7 @@ export async function createFlowlensApp(
     );
   const store = makeTraceStore(await readGraph());
   const app = new Hono();
+  const openStreams = new Set<() => void>();
 
   app.get("/", async (c) => {
     if (!options.viewerDir)
@@ -167,8 +168,8 @@ export async function createFlowlensApp(
     return c.json({});
   });
 
-  app.get("/api/stream", (c) =>
-    streamSSE(c, async (stream) => {
+  app.get("/api/stream", (c) => {
+    const response = streamSSE(c, async (stream) => {
       const unsubscribe = store.subscribe(({ event, data }) => {
         void stream
           .writeSSE({ event, data: data === null ? "" : JSON.stringify(data) })
@@ -177,21 +178,29 @@ export async function createFlowlensApp(
       const heartbeat = setInterval(() => {
         void stream.write(": heartbeat\n\n").catch(() => {});
       }, 15_000).unref();
+      const done = Promise.withResolvers<void>();
+      openStreams.add(done.resolve);
+      stream.onAbort(done.resolve);
       try {
-        const aborted = new Promise<void>((finish) => stream.onAbort(finish));
         await stream.write(": connected\n\n");
-        if (!stream.aborted) await aborted;
+        if (!stream.aborted) await done.promise;
       } finally {
+        openStreams.delete(done.resolve);
         clearInterval(heartbeat);
         unsubscribe();
       }
-    }),
-  );
+    });
+    response.headers.set("Connection", "close");
+    return response;
+  });
 
   return {
     app,
     graphDirectory,
     store,
+    closeStreams() {
+      for (const finish of openStreams) finish();
+    },
     reload: async () => store.replaceGraph(await readGraph()),
   };
 }
@@ -200,10 +209,8 @@ export async function serveFlowlens(
   projectRoot: string,
   options: ServerOptions = {},
 ) {
-  const { app, graphDirectory, store, reload } = await createFlowlensApp(
-    projectRoot,
-    options,
-  );
+  const { app, graphDirectory, store, reload, closeStreams } =
+    await createFlowlensApp(projectRoot, options);
   let timer: ReturnType<typeof setTimeout> | undefined;
   const watcher = watch(graphDirectory, (_event, file) => {
     if (file && file !== "graph.json") return;
@@ -228,6 +235,7 @@ export async function serveFlowlens(
       async close() {
         clearTimeout(timer);
         watcher.close();
+        closeStreams();
         store.close();
         await new Promise<void>((done) => server.close(() => done()));
       },

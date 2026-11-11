@@ -137,6 +137,7 @@ kbd {
   background: var(--surface);
 }
 .main {
+  position: relative;
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(235px, 27%);
   min-height: 0;
@@ -204,10 +205,10 @@ kbd {
 }
 .card-content {
   display: grid;
-  gap: 7px;
+  gap: 5px;
   align-content: center;
-  height: 84px;
-  padding: 11px 14px;
+  height: 94px;
+  padding: 7px 11px;
 }
 .is-expanded .card-content {
   border-bottom: 1px dashed var(--line);
@@ -237,7 +238,7 @@ kbd {
   background: #a36a36;
 }
 .card-title {
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 650;
   line-height: 1.12;
   overflow-wrap: anywhere;

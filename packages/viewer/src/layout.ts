@@ -1,4 +1,4 @@
-import type { Graph, GraphNode } from "@flowlens/core";
+import type { Graph, GraphNode, NodeStats } from "@flowlens/core";
 import {
   type Edge,
   MarkerType,
@@ -10,7 +10,13 @@ import workerUrl from "elkjs/lib/elk-worker.min.js?url";
 import { scope } from "./model";
 
 export type CardNode = Node<
-  { node: GraphNode; group: string; open: boolean },
+  {
+    node: GraphNode;
+    group: string;
+    open: boolean;
+    stats?: NodeStats;
+    tone?: "neutral" | "amber" | "red";
+  },
   "graphCard"
 >;
 export type CardEdge = Edge<{ kind: "flow" | "calls" | "depends" }>;
@@ -23,7 +29,7 @@ export type Layout = {
 
 const elk = new ELK({ workerUrl });
 const cardWidth = 188;
-const cardHeight = 86;
+const cardHeight = 96;
 const padding = 26;
 const cache = new Map<string, Map<string, XYPosition>>();
 
@@ -65,7 +71,10 @@ async function layoutScope(
             id,
           )
         : emptyLayout;
-      const width = Math.max(cardWidth, nested.width + padding * 2);
+      const width = Math.max(
+        node.kind === "step" ? 152 : cardWidth,
+        nested.width + padding * 2,
+      );
       const height = nested.nodes.length
         ? cardHeight + nested.height + padding
         : cardHeight;
@@ -103,7 +112,8 @@ async function layoutScope(
         "elk.algorithm": "layered",
         "elk.direction": "RIGHT",
         "elk.spacing.nodeNode": "30",
-        "elk.layered.spacing.nodeNodeBetweenLayers": "54",
+        "elk.layered.spacing.nodeNodeBetweenLayers":
+          group[0]?.kind === "step" ? "30" : "46",
         "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
         "elk.layered.considerModelOrder.components": "MODEL_ORDER",
         "elk.padding": "[top=0,left=0,bottom=0,right=0]",

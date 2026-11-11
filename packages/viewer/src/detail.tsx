@@ -1,5 +1,11 @@
-import { type GraphNode, SourceResponse } from "@flowlens/core";
+import {
+  type Graph,
+  type GraphNode,
+  SourceResponse,
+  type Trace,
+} from "@flowlens/core";
 import { useEffect, useState } from "react";
+import { formatMs, useLive } from "./live";
 
 function highlight(line: string) {
   const tokens =
@@ -78,7 +84,81 @@ function Source({ node }: { node: GraphNode }) {
   );
 }
 
-export function Detail({ node }: { node?: GraphNode }) {
+const stepColors = [
+  "#6256df",
+  "#3975ba",
+  "#238779",
+  "#8866bf",
+  "#a56142",
+  "#4c778d",
+];
+
+function TraceBreakdown({ graph, trace }: { graph: Graph; trace: Trace }) {
+  const mapped = trace.spans.flatMap((span) => {
+    const step = graph.nodes.find(({ id }) => id === span.stepId);
+    return step
+      ? [{ id: span.spanId, label: step.label, duration: span.durationMs }]
+      : [];
+  });
+  if (!mapped.length) return null;
+  const sum = mapped.reduce((total, step) => total + step.duration, 0);
+  const total = Math.max(trace.durationMs, sum);
+  const segments = mapped.map((step, index) => ({
+    ...step,
+    color: stepColors[index % stepColors.length],
+  }));
+  return (
+    <section className="breakdown" aria-label="Trace duration breakdown">
+      <h3>
+        Trace duration <code>{formatMs(trace.durationMs)}</code>
+      </h3>
+      <div className="duration-bar">
+        {segments.map((step) => (
+          <span
+            key={step.id}
+            style={{
+              width: `${total ? (step.duration / total) * 100 : 0}%`,
+              backgroundColor: step.color,
+            }}
+            title={`${step.label} · ${formatMs(step.duration)}`}
+          />
+        ))}
+      </div>
+      <ul>
+        {segments.map((step) => (
+          <li key={step.id}>
+            <span>
+              <i style={{ backgroundColor: step.color }} />
+              {step.label}
+            </span>
+            <code>{formatMs(step.duration)}</code>
+          </li>
+        ))}
+        {total > sum && (
+          <li>
+            <span>Other request work</span>
+            <code>{formatMs(total - sum)}</code>
+          </li>
+        )}
+      </ul>
+    </section>
+  );
+}
+
+export function Detail({ node, graph }: { node?: GraphNode; graph: Graph }) {
+  const stats = useLive((state) => (node ? state.stats[node.id] : undefined));
+  const trace = useLive((state) =>
+    state.traces.find(({ traceId }) => traceId === state.selectedTrace),
+  );
+  const metrics = stats
+    ? [
+        ["Count", String(stats.count)],
+        ["p50", formatMs(stats.p50Ms)],
+        ["p95", formatMs(stats.p95Ms)],
+        ["Last", formatMs(stats.lastMs)],
+        ["Errors", String(stats.errorCount)],
+      ]
+    : [];
   return (
     <aside className="detail" aria-label="Node details">
       <p className="eyebrow">Node details</p>
@@ -91,6 +171,19 @@ export function Detail({ node }: { node?: GraphNode }) {
               {node.file}
               {node.range && `:${node.range.startLine}–${node.range.endLine}`}
             </p>
+          )}
+          {!!metrics.length && (
+            <dl className="detail-stats">
+              {metrics.map(([label, value]) => (
+                <div key={label}>
+                  <dt>{label}</dt>
+                  <dd>{value}</dd>
+                </div>
+              ))}
+            </dl>
+          )}
+          {node.kind === "feature" && trace?.featureId === node.id && (
+            <TraceBreakdown graph={graph} trace={trace} />
           )}
           {node.kind === "function" && <Source key={node.id} node={node} />}
         </>
