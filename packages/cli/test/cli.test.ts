@@ -97,14 +97,11 @@ test("init configures a traced app and dev keeps its output off stdout", async (
   try {
     await writeFile(join(root, "package.json"), '{"type":"module"}');
     await writeFile(
-      join(root, "tsconfig.json"),
-      '{"compilerOptions":{"allowJs":true},"include":["index.js"]}',
-    );
-    await writeFile(
       join(root, "index.js"),
       `
       import { createServer } from "node:http";
-      const server = createServer((_request, response) => response.end("pong"));
+      function health(_request, response) { response.end("pong"); }
+      const server = createServer(health);
       server.listen(0, "127.0.0.1", () => {
         process.stdout.write("APP_PORT=" + server.address().port + "\\n");
       });
@@ -125,6 +122,8 @@ test("init configures a traced app and dev keeps its output off stdout", async (
         .poll(() => /APP_PORT=\d+/.test(stderr), { timeout: 6000 })
         .toBe(true);
       expect(stdout).toMatch(/^http:\/\/127\.0\.0\.1:\d+\n$/);
+      const graph = await fetch(`${stdout.trim()}/api/graph`);
+      expect(await graph.text()).toContain("#health");
       const port = /APP_PORT=(\d+)/.exec(stderr)?.[1];
       const response = await fetch(`http://127.0.0.1:${port}`);
       expect(await response.text()).toBe("pong");

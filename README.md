@@ -56,7 +56,7 @@ The graph refreshes as source files change. Live OpenTelemetry spans add duratio
 
 ## Use it on your project
 
-After the 0.2.0 npm release, run these from the directory containing your project's `tsconfig.json`.
+After the 0.2.0 npm release, run these from your project's root.
 
 ```sh
 npx @nazs/flowlens@0.2.0 init

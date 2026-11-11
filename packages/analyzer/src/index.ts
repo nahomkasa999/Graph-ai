@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
-import { watch } from "node:fs";
+import { existsSync, watch } from "node:fs";
 import {
+  glob,
   mkdir,
   readFile,
   realpath,
@@ -9,7 +10,7 @@ import {
   stat,
   writeFile,
 } from "node:fs/promises";
-import { join, matchesGlob, resolve } from "node:path";
+import { basename, join, matchesGlob, resolve } from "node:path";
 import {
   edgeId,
   Graph,
@@ -19,7 +20,7 @@ import {
   moduleId,
   technologyNames,
 } from "@nazs/flowlens-core";
-import { Node, Project, type SourceFile } from "ts-morph";
+import { Node, Project, type SourceFile, ts } from "ts-morph";
 import { z } from "zod";
 import {
   collectFunctions,
@@ -97,13 +98,32 @@ async function writeJson(root: string, file: string, data: unknown) {
   }
 }
 
+async function sourceProject(root: string, config?: string) {
+  if (config) return new Project({ tsConfigFilePath: config });
+  const project = new Project({
+    compilerOptions: { allowJs: true, module: ts.ModuleKind.NodeNext },
+  });
+  const paths = glob("**/*.{ts,tsx,mts,cts,js,jsx,mjs,cjs}", {
+    cwd: root,
+    exclude: (path) =>
+      basename(path).startsWith(".") ||
+      ["node_modules", "__tests__", "dist", "build"].includes(basename(path)),
+  });
+  for await (const file of paths) {
+    if (isSourcePath(relativePath(root, join(root, file))))
+      project.addSourceFileAtPath(join(root, file));
+  }
+  return project;
+}
+
 export async function analyze(
   projectRoot: string,
   options: AnalyzeOptions = {},
 ): Promise<Graph> {
   const root = await realpath(projectRoot);
-  const config = join(root, "tsconfig.json");
-  const project = new Project({ tsConfigFilePath: config });
+  const configPath = join(root, "tsconfig.json");
+  const config = existsSync(configPath) ? configPath : undefined;
+  const project = await sourceProject(root, config);
   const sources = ownSources(project.getSourceFiles(), root);
   const patterns = await modulePatterns(root);
   const modules = new Map<SourceFile, string>();
@@ -178,9 +198,10 @@ export async function analyze(
   for (const node of routes.nodes) nodes.set(node.id, node);
   for (const edge of routes.edges) edges.set(edge.id, edge);
   const timestamps = await Promise.all(
-    [config, ...sources.map((source) => source.getFilePath())].map(
-      async (file) => (await stat(file)).mtimeMs,
-    ),
+    [
+      ...(config ? [config] : []),
+      ...sources.map((source) => source.getFilePath()),
+    ].map(async (file) => (await stat(file)).mtimeMs),
   );
   const sortById = <T extends { id: string }>(items: Iterable<T>) =>
     [...items].sort((left, right) =>
