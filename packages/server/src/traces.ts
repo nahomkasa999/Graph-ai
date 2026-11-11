@@ -4,7 +4,7 @@ import type {
   Stats,
   Trace,
   TraceComplete,
-} from "@flowlens/core";
+} from "@nazs/flowlens-core";
 import { makeMapper } from "./mapping";
 import type { RawSpan } from "./otlp";
 

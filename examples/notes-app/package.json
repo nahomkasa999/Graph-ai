@@ -1,10 +1,10 @@
 {
-  "name": "@flowlens/notes-app",
+  "name": "@nazs/flowlens-notes-app",
   "private": true,
   "type": "module",
   "scripts": {
     "start": "node src/index.ts",
-    "start:traced": "node --import @flowlens/tracer/register src/index.ts",
+    "start:traced": "node --import @nazs/flowlens-tracer/register src/index.ts",
     "traffic": "node scripts/traffic.ts"
   },
   "dependencies": {
@@ -15,6 +15,6 @@
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.0",
-    "@flowlens/tracer": "workspace:*"
+    "@nazs/flowlens-tracer": "workspace:*"
   }
 }

@@ -3,7 +3,7 @@ import {
   type GraphNode,
   SourceResponse,
   type Trace,
-} from "@flowlens/core";
+} from "@nazs/flowlens-core";
 import { useEffect, useState } from "react";
 import { formatMs, useLive } from "./live";
 

@@ -84,7 +84,7 @@ test("a real notes request streams six mapped function steps in under 500 ms", a
     const base = `http://127.0.0.1:${server.port}`;
     child = spawn(
       process.execPath,
-      ["--import", "@flowlens/tracer/register", "src/index.ts"],
+      ["--import", "@nazs/flowlens-tracer/register", "src/index.ts"],
       {
         cwd: demo,
         env: {

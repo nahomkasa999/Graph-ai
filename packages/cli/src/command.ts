@@ -40,7 +40,7 @@ export async function entryFor(root: string, explicit?: string) {
 
 export function tracedCommand(root: string, entry: string, port: number) {
   const url = `http://127.0.0.1:${port}/v1/traces`;
-  const preload = import.meta.resolve("@flowlens/tracer/register");
+  const preload = import.meta.resolve("@nazs/flowlens-tracer/register");
   if (process.platform === "win32") {
     const quote = (value: string) => `'${value.replaceAll("'", "''")}'`;
     return `Set-Location -LiteralPath ${quote(root)}; $env:FLOWLENS_ROOT=${quote(root)}; $env:FLOWLENS_URL=${quote(url)}; node --import ${quote(preload)} ${quote(entry)}`;

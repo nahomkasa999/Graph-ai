@@ -19,3 +19,4 @@
 - M6: CLI, quick start, contributor guide, animated demo and release packaging checks.
   Added offline technology icons for Pinecone, database drivers and frameworks. Verified Pinecone detection through SDK client variables, SQLite on the demo graph and the generic database icon.
   All six npm publish dry-runs passed. Package manifests use release versions and include the MIT license.
+- npm release: Moved the workspace to `@nazs` and added a manual workflow to stage the six public packages.

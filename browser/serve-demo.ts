@@ -11,12 +11,12 @@ await analyze(root);
 const server = await serveFlowlens(root, {
   port: Number(process.env.FLOWLENS_TEST_PORT ?? 5401),
   viewerDir: resolve("packages/viewer/dist"),
-  startCommand: "pnpm --filter @flowlens/notes-app start:traced",
+  startCommand: "pnpm --filter @nazs/flowlens-notes-app start:traced",
 });
 
 const notes = spawn(
   process.execPath,
-  ["--import", "@flowlens/tracer/register", "src/index.ts"],
+  ["--import", "@nazs/flowlens-tracer/register", "src/index.ts"],
   {
     cwd: root,
     stdio: "inherit",

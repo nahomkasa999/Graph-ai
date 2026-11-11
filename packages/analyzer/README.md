@@ -1,4 +1,4 @@
-# @flowlens/analyzer
+# @nazs/flowlens-analyzer
 
 `analyze(root, options)` reads the project's tsconfig and returns the version 1 graph. By default it writes `.flowlens/graph.json` and `.flowlens/instrument.json`. Set `write: false` for in-memory analysis or pass `onWarning` to collect skipped-route messages.
 

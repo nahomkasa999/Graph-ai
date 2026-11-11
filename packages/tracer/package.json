@@ -1,5 +1,5 @@
 {
-  "name": "@flowlens/tracer",
+  "name": "@nazs/flowlens-tracer",
   "version": "0.1.0",
   "license": "MIT",
   "type": "module",
@@ -22,7 +22,7 @@
   "dependencies": {
     "@babel/core": "^7.28.0",
     "@babel/preset-typescript": "^7.28.0",
-    "@flowlens/core": "workspace:*",
+    "@nazs/flowlens-core": "workspace:*",
     "@opentelemetry/api": "~1.10.0",
     "@opentelemetry/exporter-trace-otlp-http": "~0.301.1",
     "@opentelemetry/instrumentation-http": "~0.301.1",
@@ -35,5 +35,13 @@
   },
   "engines": {
     "node": ">=22.18.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nahomkasa999/Graph-ai.git",
+    "directory": "packages/tracer"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

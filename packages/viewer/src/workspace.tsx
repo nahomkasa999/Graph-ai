@@ -1,4 +1,4 @@
-import type { Graph, GraphNode, Trace } from "@flowlens/core";
+import type { Graph, GraphNode, Trace } from "@nazs/flowlens-core";
 import { lazy, Suspense, useCallback, useEffect, useState } from "react";
 import { Detail } from "./detail";
 import { replayTrace, useLive } from "./live";

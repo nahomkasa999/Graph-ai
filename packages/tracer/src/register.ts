@@ -1,7 +1,7 @@
 import { readFile, realpath } from "node:fs/promises";
 import { createRequire, register, syncBuiltinESMExports } from "node:module";
 import { join } from "node:path";
-import { Instrumentation } from "@flowlens/core";
+import { Instrumentation } from "@nazs/flowlens-core";
 import { CollectorURL, warnOnce } from "./config";
 
 if (process.env.FLOWLENS_DISABLE !== "1") {

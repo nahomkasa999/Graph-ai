@@ -1,4 +1,4 @@
-# @flowlens/cli
+# @nazs/flowlens
 
 - `flowlens init [directory]` creates a config if one does not already exist.
 - `flowlens analyze [directory] [--watch]` writes the graph and instrumentation manifest. Watch mode refreshes both after source changes.

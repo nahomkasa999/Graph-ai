@@ -1,0 +1,71 @@
+name: Stage npm release
+on:
+  workflow_dispatch:
+    inputs:
+      start_at:
+        description: First package to stage (choose a later package to resume a partial run)
+        type: choice
+        default: core
+        options:
+          - core
+          - analyzer
+          - tracer
+          - server
+          - viewer
+          - cli
+
+permissions:
+  contents: read
+
+concurrency:
+  group: npm-staging
+
+jobs:
+  stage:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.x
+          registry-url: https://registry.npmjs.org
+      - run: npm install --global npm@11.21.2
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm build
+      - run: pnpm typecheck
+      - run: pnpm test
+      - name: Pack the release
+        run: |
+          mkdir "$RUNNER_TEMP/flowlens-release"
+          for package in core analyzer tracer server viewer cli; do
+            pnpm --dir "packages/$package" pack --pack-destination "$RUNNER_TEMP/flowlens-release"
+          done
+      - name: Stage public packages
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_STAGE_TOKEN }}
+          START_AT: ${{ inputs.start_at }}
+        run: |
+          if [[ -z "$NODE_AUTH_TOKEN" ]]; then
+            echo "::error::Add the NPM_STAGE_TOKEN repository secret before staging a release."
+            exit 1
+          fi
+          started=false
+          for package in core analyzer tracer server viewer cli; do
+            if [[ "$package" == "$START_AT" ]]; then
+              started=true
+            fi
+            if [[ "$started" == false ]]; then
+              continue
+            fi
+
+            name="nazs-flowlens-$package"
+            if [[ "$package" == cli ]]; then
+              name="nazs-flowlens"
+            fi
+            version="$(node -p "require('./packages/$package/package.json').version")"
+            archive="$RUNNER_TEMP/flowlens-release/$name-$version.tgz"
+            npm stage publish "$archive" --access public --ignore-scripts
+          done

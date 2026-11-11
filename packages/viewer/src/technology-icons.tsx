@@ -12,7 +12,7 @@ import {
   Supabase,
   Zod,
 } from "@dev.icons/react";
-import { type GraphNode, technologyNames } from "@flowlens/core";
+import { type GraphNode, technologyNames } from "@nazs/flowlens-core";
 
 const databaseBrands = [
   {

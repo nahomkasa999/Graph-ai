@@ -1,5 +1,5 @@
 {
-  "name": "@flowlens/server",
+  "name": "@nazs/flowlens-server",
   "version": "0.1.0",
   "license": "MIT",
   "type": "module",
@@ -16,12 +16,20 @@
     "build": "tsup src/index.ts --format esm --dts --clean"
   },
   "dependencies": {
-    "@flowlens/core": "workspace:*",
+    "@nazs/flowlens-core": "workspace:*",
     "@hono/node-server": "^1.19.0",
     "hono": "^4.13.17",
     "zod": "^4.0.0"
   },
   "engines": {
     "node": ">=22.18.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nahomkasa999/Graph-ai.git",
+    "directory": "packages/server"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

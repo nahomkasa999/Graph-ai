@@ -1,4 +1,4 @@
-import type { Graph, SpanEvent } from "@flowlens/core";
+import type { Graph, SpanEvent } from "@nazs/flowlens-core";
 import type { RawSpan } from "./otlp";
 
 function routeExpression(path: string) {

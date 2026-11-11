@@ -1,4 +1,4 @@
-import type { Graph, GraphNode, NodeStats } from "@flowlens/core";
+import type { Graph, GraphNode, NodeStats } from "@nazs/flowlens-core";
 import {
   type Edge,
   MarkerType,

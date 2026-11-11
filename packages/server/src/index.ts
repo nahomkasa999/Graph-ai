@@ -1,8 +1,8 @@
 import { watch } from "node:fs";
 import { readFile, realpath } from "node:fs/promises";
 import { isAbsolute, join, relative, resolve, sep, win32 } from "node:path";
-import { Graph, SourceRange } from "@flowlens/core";
 import { serve } from "@hono/node-server";
+import { Graph, SourceRange } from "@nazs/flowlens-core";
 import { Hono } from "hono";
 import { streamSSE } from "hono/streaming";
 import { z } from "zod";

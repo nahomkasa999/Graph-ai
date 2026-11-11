@@ -1,5 +1,5 @@
 {
-  "name": "@flowlens/core",
+  "name": "@nazs/flowlens-core",
   "version": "0.1.0",
   "license": "MIT",
   "type": "module",
@@ -20,5 +20,13 @@
   },
   "engines": {
     "node": ">=22.18.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nahomkasa999/Graph-ai.git",
+    "directory": "packages/core"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

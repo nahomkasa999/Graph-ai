@@ -1,4 +1,10 @@
-import { Graph, SpanEvent, Stats, Trace, TraceComplete } from "@flowlens/core";
+import {
+  Graph,
+  SpanEvent,
+  Stats,
+  Trace,
+  TraceComplete,
+} from "@nazs/flowlens-core";
 import { useEffect } from "react";
 import { create } from "zustand";
 

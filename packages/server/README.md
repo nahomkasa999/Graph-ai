@@ -1,4 +1,4 @@
-# @flowlens/server
+# @nazs/flowlens-server
 
 `serveFlowlens(root, options)` starts a loopback-only HTTP server and returns its port and an async close function. It reads the generated graph and watches the graph directory for replacements. Pass `viewerDir` to serve a built viewer. `createFlowlensApp` exposes the same Hono API for tests and embedding.
 

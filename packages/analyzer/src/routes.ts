@@ -5,7 +5,7 @@ import {
   type GraphNode,
   stepId,
   technologyNames,
-} from "@flowlens/core";
+} from "@nazs/flowlens-core";
 import { Node, type SourceFile } from "ts-morph";
 import {
   type Handler,

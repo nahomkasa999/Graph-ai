@@ -1,7 +1,7 @@
 import { type Span, SpanStatusCode, trace } from "@opentelemetry/api";
 import { warnOnce } from "./config";
 
-const tracer = trace.getTracer("@flowlens/tracer");
+const tracer = trace.getTracer("@nazs/flowlens-tracer");
 type Outcome =
   | { kind: "value"; value: unknown }
   | { kind: "error"; error: unknown };

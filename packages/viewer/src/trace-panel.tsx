@@ -1,4 +1,4 @@
-import type { Graph, Trace } from "@flowlens/core";
+import type { Graph, Trace } from "@nazs/flowlens-core";
 import { formatMs, useLive } from "./live";
 
 export function TracePanel({
@@ -15,7 +15,7 @@ export function TracePanel({
   const unmapped = selected?.spans.filter((span) => !span.nodeId) ?? [];
   const command =
     document.body.dataset.startCommand ??
-    "node --import @flowlens/tracer/register src/index.ts";
+    "node --import @nazs/flowlens-tracer/register src/index.ts";
   return (
     <section className="trace-panel" aria-label="Recent traces">
       <div className="trace-heading">

@@ -3,8 +3,8 @@
 import { realpath, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { analyze, watchProject } from "@flowlens/analyzer";
-import { serveFlowlens } from "@flowlens/server";
+import { analyze, watchProject } from "@nazs/flowlens-analyzer";
+import { serveFlowlens } from "@nazs/flowlens-server";
 import { Command } from "commander";
 import { z } from "zod";
 import manifest from "../package.json" with { type: "json" };
@@ -111,7 +111,7 @@ program
       const port = Port.parse(options.port);
       const entry = await entryFor(root, options.entry);
       const viewerDir = dirname(
-        fileURLToPath(import.meta.resolve("@flowlens/viewer/index.html")),
+        fileURLToPath(import.meta.resolve("@nazs/flowlens-viewer/index.html")),
       );
       await buildGraph(root);
       let command = tracedCommand(root, entry, port);

@@ -1,7 +1,7 @@
 import { mkdir, mkdtemp, rm, symlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { Graph } from "@flowlens/core";
+import { Graph } from "@nazs/flowlens-core";
 import { expect, test } from "vitest";
 import { createFlowlensApp } from "../src/index";
 import { decodeSpans, OtlpPayload } from "../src/otlp";

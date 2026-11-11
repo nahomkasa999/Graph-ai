@@ -1,5 +1,5 @@
 {
-  "name": "@flowlens/cli",
+  "name": "@nazs/flowlens",
   "version": "0.1.0",
   "license": "MIT",
   "type": "module",
@@ -16,11 +16,19 @@
     "build": "tsup src/index.ts --format esm --clean"
   },
   "dependencies": {
-    "@flowlens/analyzer": "workspace:*",
-    "@flowlens/server": "workspace:*",
-    "@flowlens/tracer": "workspace:*",
-    "@flowlens/viewer": "workspace:*",
+    "@nazs/flowlens-analyzer": "workspace:*",
+    "@nazs/flowlens-server": "workspace:*",
+    "@nazs/flowlens-tracer": "workspace:*",
+    "@nazs/flowlens-viewer": "workspace:*",
     "commander": "^14.0.3",
     "zod": "^4.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nahomkasa999/Graph-ai.git",
+    "directory": "packages/cli"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

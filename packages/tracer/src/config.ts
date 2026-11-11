@@ -1,4 +1,4 @@
-import { Instrumentation } from "@flowlens/core";
+import { Instrumentation } from "@nazs/flowlens-core";
 import { z } from "zod";
 
 export const CollectorURL = z.url().refine(

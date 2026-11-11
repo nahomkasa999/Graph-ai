@@ -1,4 +1,4 @@
-import type { Graph, GraphNode } from "@flowlens/core";
+import type { Graph, GraphNode } from "@nazs/flowlens-core";
 import { type FormEvent, useEffect, useRef, useState } from "react";
 import { searchNodes } from "./model";
 

@@ -1,4 +1,4 @@
-import type { Graph, GraphNode } from "@flowlens/core";
+import type { Graph, GraphNode } from "@nazs/flowlens-core";
 import { create } from "zustand";
 
 const order = (node: GraphNode) =>

@@ -18,7 +18,7 @@ import {
   Instrumentation,
   moduleId,
   technologyNames,
-} from "@flowlens/core";
+} from "@nazs/flowlens-core";
 import { Node, Project, type SourceFile } from "ts-morph";
 import { z } from "zod";
 import {

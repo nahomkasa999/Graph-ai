@@ -1,4 +1,4 @@
-import { functionId, type GraphNode } from "@flowlens/core";
+import { functionId, type GraphNode } from "@nazs/flowlens-core";
 import {
   type ArrowFunction,
   type Expression,

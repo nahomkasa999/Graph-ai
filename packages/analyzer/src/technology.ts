@@ -1,4 +1,4 @@
-import { type GraphNode, technologyNames } from "@flowlens/core";
+import { type GraphNode, technologyNames } from "@nazs/flowlens-core";
 import { type Expression, Node } from "ts-morph";
 import { declarations, packageName, rootExpression } from "./source";
 

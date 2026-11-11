@@ -39,15 +39,15 @@ Flowlens is a pnpm monorepo of six packages plus a demo app, all TypeScript (str
 
 **Tooling:** pnpm workspaces, TypeScript strict, tsup for builds, vitest for tests, Biome for lint and format, GitHub Actions CI, MIT license.
 
-| Package              | Purpose                                                                      | Main dependencies                          |
-| -------------------- | ---------------------------------------------------------------------------- | ------------------------------------------ |
-| `@flowlens/core`     | Graph schema, shared types, ID helpers                                       | zod                                        |
-| `@flowlens/analyzer` | Static analysis; writes `.flowlens/graph.json`                               | ts-morph                                   |
-| `@flowlens/tracer`   | Runtime tracing: OpenTelemetry setup plus a loader that wraps step functions | @opentelemetry/sdk-node, @babel/core       |
-| `@flowlens/server`   | Serves the viewer and graph, receives spans, streams events                  | hono, @hono/node-server                    |
-| `@flowlens/viewer`   | Browser UI                                                                   | react, vite, @xyflow/react, elkjs, zustand |
-| `@flowlens/cli`      | Commands `init`, `analyze`, `dev`                                            | commander                                  |
-| `examples/notes-app` | Demo and test target                                                         | hono, better-sqlite3                       |
+| Package                   | Purpose                                                                      | Main dependencies                          |
+| ------------------------- | ---------------------------------------------------------------------------- | ------------------------------------------ |
+| `@nazs/flowlens-core`     | Graph schema, shared types, ID helpers                                       | zod                                        |
+| `@nazs/flowlens-analyzer` | Static analysis; writes `.flowlens/graph.json`                               | ts-morph                                   |
+| `@nazs/flowlens-tracer`   | Runtime tracing: OpenTelemetry setup plus a loader that wraps step functions | @opentelemetry/sdk-node, @babel/core       |
+| `@nazs/flowlens-server`   | Serves the viewer and graph, receives spans, streams events                  | hono, @hono/node-server                    |
+| `@nazs/flowlens-viewer`   | Browser UI                                                                   | react, vite, @xyflow/react, elkjs, zustand |
+| `@nazs/flowlens`          | Commands `init`, `analyze`, `dev`                                            | commander                                  |
+| `examples/notes-app`      | Demo and test target                                                         | hono, better-sqlite3                       |
 
 **Ports:** one server on port 4777 serves the viewer at `/`, the graph at `/api/graph`, an event stream at `/api/stream` (Server-Sent Events) and accepts OTLP/HTTP JSON traces at `/v1/traces`.
 
@@ -59,14 +59,14 @@ The app's tracer sends spans to the server, which maps them to graph nodes and s
 
 1. `flowlens analyze` reads the project's `tsconfig.json` and writes `.flowlens/graph.json`.
 2. `flowlens dev` runs analyze, starts the server, and prints the command to start the user's app with tracing.
-3. The user's app runs with `node --import @flowlens/tracer/register app.js`. This starts OpenTelemetry and registers the loader.
+3. The user's app runs with `node --import @nazs/flowlens-tracer/register app.js`. This starts OpenTelemetry and registers the loader.
 4. Each finished request exports its spans to `/v1/traces`.
 5. The server maps every span to a graph node ID and pushes a normalized event over `/api/stream`.
 6. The viewer loads the graph once, then paints durations and errors onto nodes as events arrive.
 
 ## 3. Graph data model
 
-The graph is a tree of containment (parent to child) plus edges for flow between siblings. Both are defined once in `@flowlens/core` as zod schemas, and every other package imports the inferred types.
+The graph is a tree of containment (parent to child) plus edges for flow between siblings. Both are defined once in `@nazs/flowlens-core` as zod schemas, and every other package imports the inferred types.
 
 **Zoom levels** (the body, organ, tissue, cell idea):
 
@@ -136,7 +136,7 @@ export const SpanEvent = z.object({
 
 ## 4. Static analyzer
 
-`@flowlens/analyzer` exports `analyze(projectRoot, options): Promise<Graph>` and writes two files: `.flowlens/graph.json` and `.flowlens/instrument.json` (the list of functions the tracer will wrap, see section 5). It uses one shared ts-morph `Project` built from the target's `tsconfig.json`. It skips `node_modules`, `*.d.ts`, and test files (`*.test.ts`, `*.spec.ts`, `__tests__`).
+`@nazs/flowlens-analyzer` exports `analyze(projectRoot, options): Promise<Graph>` and writes two files: `.flowlens/graph.json` and `.flowlens/instrument.json` (the list of functions the tracer will wrap, see section 5). It uses one shared ts-morph `Project` built from the target's `tsconfig.json`. It skips `node_modules`, `*.d.ts`, and test files (`*.test.ts`, `*.spec.ts`, `__tests__`).
 
 **Algorithm, in order:**
 
@@ -176,7 +176,7 @@ The tracer makes the user's app emit one OpenTelemetry span per request and one 
 
 ### 5.1 Starting the tracer
 
-`node --import @flowlens/tracer/register src/index.ts` does three things:
+`node --import @nazs/flowlens-tracer/register src/index.ts` does three things:
 
 1. Starts the OpenTelemetry `NodeSDK` with the HTTP auto-instrumentations and an OTLP/HTTP **JSON** exporter pointed at `FLOWLENS_URL` (default `http://127.0.0.1:4777/v1/traces`). Use a `BatchSpanProcessor` with `scheduledDelayMillis: 100` so traces reach the viewer within 500 ms.
 2. Reads `.flowlens/instrument.json` from `FLOWLENS_ROOT` (default: current directory).
@@ -194,7 +194,7 @@ The plugin matches entries by **relative file path and function name** (not line
 
 - `function foo() {}` and `export function foo() {}`: insert `foo = __fl.wrap("<nodeId>", foo);` right after the declaration.
 - `const foo = () => {}` or `const foo = function () {}`: replace the initializer with `__fl.wrap("<nodeId>", <original initializer>)`.
-- Add one import at the top of the file for `__fl`, using the **absolute file URL** of the tracer's runtime module, so the target project does not need `@flowlens/tracer` as a dependency.
+- Add one import at the top of the file for `__fl`, using the **absolute file URL** of the tracer's runtime module, so the target project does not need `@nazs/flowlens-tracer` as a dependency.
 
 `__fl.wrap(nodeId, fn)` returns a function that:
 
@@ -235,7 +235,7 @@ The server binds to `127.0.0.1` only. No auth in v1, and no CORS headers.
 
 ## 6. Viewer UI
 
-`@flowlens/viewer` is a React + Vite single-page app built with `@xyflow/react` (React Flow) for the canvas, `elkjs` for automatic layout, and `zustand` for state. The server serves its production build at `/`. It talks only to the API in section 5.4.
+`@nazs/flowlens-viewer` is a React + Vite single-page app built with `@xyflow/react` (React Flow) for the canvas, `elkjs` for automatic layout, and `zustand` for state. The server serves its production build at `/`. It talks only to the API in section 5.4.
 
 **Screen layout:**
 
@@ -315,7 +315,7 @@ Expected graph for this route: a feature `feat:POST /notes` with these steps in 
 **Scripts:**
 
 - `pnpm start`: plain run.
-- `pnpm start:traced`: `node --import @flowlens/tracer/register src/index.ts`.
+- `pnpm start:traced`: `node --import @nazs/flowlens-tracer/register src/index.ts`.
 - `pnpm traffic`: loops for 60 seconds sending a weighted mix: 40% `POST /notes`, 25% `GET /notes`, 15% `GET /notes/:id`, 10% `PUT`, 5% `DELETE`, and 5% invalid `POST` (empty title) to produce visible errors.
 
 **Tests:** a vitest suite covering each route (happy path and one failure). These are ordinary tests of the demo app, separate from the Flowlens end-to-end test in section 8.
@@ -324,14 +324,14 @@ Expected graph for this route: a feature `feat:POST /notes` with these steps in 
 
 Build in this order. Each milestone ends with a commit, a green CI run, and its acceptance checks passing. Do not start the next milestone until the current one is green. Total estimate: about 14 working days.
 
-1. **M0, scaffold (0.5 day).** Monorepo with pnpm workspaces, tsconfig base, Biome, vitest, tsup, GitHub Actions CI on Node 22.18 and 24, and `@flowlens/core` with the schemas from section 3.
+1. **M0, scaffold (0.5 day).** Monorepo with pnpm workspaces, tsconfig base, Biome, vitest, tsup, GitHub Actions CI on Node 22.18 and 24, and `@nazs/flowlens-core` with the schemas from section 3.
    - Accept: `pnpm install && pnpm build && pnpm test` passes locally and in CI.
 2. **M1, demo app (0.5 day).** `examples/notes-app` exactly as in section 7, with its tests and the traffic script.
    - Accept: its tests pass; `pnpm traffic` runs for 60 seconds with no unexpected errors.
 3. **M2, analyzer (3 days).** Section 4 in full, plus the fixtures and snapshot tests.
    - Accept: on the notes app the graph has modules `notes`, `db`, `search`, `audit`; feature `feat:POST /notes` has the 7 steps listed in section 7; two runs give byte-identical files; analysis takes under 10 seconds.
 4. **M3, server and tracer (3 days).** Sections 5.1 to 5.4.
-   - Accept: an end-to-end test starts the server, starts the notes app with `--import @flowlens/tracer/register`, sends one `POST /notes`, then reads `/api/traces`. The trace must be mapped to `feat:POST /notes` and contain 6 spans with a non-null `stepId`. Measure delay between request completion and the `trace-complete` event; it must be under 500 ms.
+   - Accept: an end-to-end test starts the server, starts the notes app with `--import @nazs/flowlens-tracer/register`, sends one `POST /notes`, then reads `/api/traces`. The trace must be mapped to `feat:POST /notes` and contain 6 spans with a non-null `stepId`. Measure delay between request completion and the `trace-complete` event; it must be under 500 ms.
 5. **M4, viewer static (3 days).** Canvas, layout, drill-down, breadcrumb, shift-click expand, hash routing, search, detail panel with source.
    - Accept: a Playwright test loads the viewer against the notes-app graph, drills from the root to a function node (4 levels) and back with the breadcrumb, and asserts the URL hash at each step.
 6. **M5, live overlay (2 days).** Stats badges, pulses, errors, trace list, replay, reconnect banner.
