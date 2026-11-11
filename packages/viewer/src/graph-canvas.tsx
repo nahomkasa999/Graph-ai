@@ -25,6 +25,7 @@ import {
 } from "./layout";
 import { formatMs, useLive } from "./live";
 import { useView } from "./model";
+import { TechnologyIcons } from "./technology-icons";
 
 function GraphCard({ data, selected }: NodeProps<CardNode>) {
   const { node, open, stats, tone } = data;
@@ -40,6 +41,7 @@ function GraphCard({ data, selected }: NodeProps<CardNode>) {
         <div className="card-kind">
           <span className="kind-mark" />
           {node.kind}
+          <TechnologyIcons node={node} />
         </div>
         <div className="card-title">{node.label}</div>
         {stats && (

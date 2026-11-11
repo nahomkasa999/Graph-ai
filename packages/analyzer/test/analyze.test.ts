@@ -103,3 +103,35 @@ test("analyzes all seven create-note steps in under ten seconds", async () => {
     steps.filter((step) => typeof step.meta.functionId === "string"),
   ).toHaveLength(6);
 }, 15_000);
+
+test("recognizes a Pinecone client behind local variables and project functions", async () => {
+  const directory = await mkdtemp(join(tmpdir(), "flowlens-technologies-"));
+  try {
+    await cp(join(fixtures, "hono-basic"), directory, { recursive: true });
+    const file = join(directory, "src/notes/service.ts");
+    await writeFile(
+      file,
+      `
+      import { Pinecone } from "@pinecone-database/pinecone";
+      const client = new Pinecone();
+      const index = client.index("notes");
+      export const helper = () => index.query({ topK: 1 });
+      export function readNote() { return helper(); }
+      export function skipNested() {}
+      export const toDto = (note: unknown) => ({ note });
+    `,
+    );
+    const graph = await analyze(directory, { write: false, onWarning() {} });
+    const names = (id: string) =>
+      graph.nodes.find((node) => node.id === id)?.meta.technologies;
+    expect(names("mod:src/notes")).toContain("@pinecone-database/pinecone");
+    expect(names("fn:src/notes/service.ts#helper")).toContain(
+      "@pinecone-database/pinecone",
+    );
+    expect(names("step:GET /notes#read note")).toContain(
+      "@pinecone-database/pinecone",
+    );
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
+});

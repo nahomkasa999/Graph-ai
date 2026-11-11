@@ -62,3 +62,28 @@ test("expands a module in place and opens a fuzzy result by keyboard", async ({
   await page.keyboard.press("Escape");
   await expect(page).toHaveURL(/#\/mod:src\/notes$/);
 });
+
+test("shows technology logos and a generic database icon on graph nodes", async ({
+  page,
+}) => {
+  await page.route("**/api/graph", async (route) => {
+    const response = await route.fetch();
+    const { Graph } = await import("../packages/core/dist/index.js");
+    const graph = Graph.parse(await response.json());
+    const search = graph.nodes.find((node) => node.id === "mod:src/search");
+    if (search) search.meta.technologies = ["@pinecone-database/pinecone"];
+    const audit = graph.nodes.find((node) => node.id === "mod:src/audit");
+    if (audit) {
+      audit.label = "database";
+      audit.meta.technologies = ["zod"];
+    }
+    await route.fulfill({ response, json: graph });
+  });
+  await page.goto("/");
+  const canvas = page.getByRole("region", { name: "Code graph" });
+  await expect(canvas.getByRole("img", { name: "SQLite" })).toBeVisible();
+  await expect(canvas.getByRole("img", { name: "Pinecone" })).toBeVisible();
+  await expect(
+    canvas.getByRole("img", { name: "Database", exact: true }),
+  ).toBeVisible();
+});

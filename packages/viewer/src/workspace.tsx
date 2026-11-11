@@ -1,11 +1,14 @@
 import type { Graph, GraphNode, Trace } from "@flowlens/core";
-import { useCallback, useEffect, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useState } from "react";
 import { Detail } from "./detail";
-import { Canvas } from "./graph-canvas";
 import { replayTrace, useLive } from "./live";
 import { breadcrumb, hashFor, readTrail, scope, useView } from "./model";
 import { Search } from "./search";
 import { TracePanel } from "./trace-panel";
+
+const Canvas = lazy(async () => ({
+  default: (await import("./graph-canvas")).Canvas,
+}));
 
 export function Workspace({ graph }: { graph: Graph }) {
   const trail = useView((state) => state.trail);
@@ -160,7 +163,15 @@ export function Workspace({ graph }: { graph: Graph }) {
             Disconnected. Reconnecting…
           </div>
         )}
-        <Canvas graph={graph} focus={focus} onDrill={drill} />
+        <Suspense
+          fallback={
+            <div className="canvas">
+              <div className="canvas-empty">Loading graph…</div>
+            </div>
+          }
+        >
+          <Canvas graph={graph} focus={focus} onDrill={drill} />
+        </Suspense>
         <Detail node={detail} graph={graph} />
       </main>
       <TracePanel graph={graph} onTrace={selectTrace} />

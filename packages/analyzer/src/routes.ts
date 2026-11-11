@@ -4,6 +4,7 @@ import {
   type GraphEdge,
   type GraphNode,
   stepId,
+  technologyNames,
 } from "@flowlens/core";
 import { Node, type SourceFile } from "ts-morph";
 import {
@@ -22,6 +23,7 @@ import {
   sourceRange,
   unparenthesize,
 } from "./source";
+import { detectedPackage } from "./technology";
 
 const methods = new Set(["get", "post", "put", "patch", "delete"]);
 const sendMethods = new Set(["json", "send", "text", "redirect"]);
@@ -111,6 +113,7 @@ export function collectRoutes(
           receiver,
           source,
           method: name.toUpperCase(),
+          technology: owner,
           path,
           handler: last,
         });
@@ -176,7 +179,14 @@ function statementCalls(
       : (project?.node.label ?? callee ?? "call");
     const label = name.replace(/([a-z0-9])([A-Z])/g, "$1 $2").toLowerCase();
     const external =
-      expression && !project && !response ? packageName(expression) : undefined;
+      expression && !project && !response
+        ? detectedPackage(expression)
+        : undefined;
+    const technologies = project
+      ? technologyNames(project.node)
+      : external
+        ? [external]
+        : [];
     return [
       {
         label,
@@ -185,6 +195,7 @@ function statementCalls(
         meta: {
           ...(project ? { functionId: project.node.id } : {}),
           ...(external ? { external } : {}),
+          ...(technologies.length ? { technologies } : {}),
         },
       },
     ];
@@ -228,6 +239,7 @@ export function routeGraph(
         method: route.method,
         path: route.path,
         handlerId: registered?.node.id ?? null,
+        technologies: [route.technology],
       },
     });
     const steps = [

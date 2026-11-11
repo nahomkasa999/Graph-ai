@@ -17,8 +17,9 @@ import {
   type GraphNode,
   Instrumentation,
   moduleId,
+  technologyNames,
 } from "@flowlens/core";
-import { type Node, Project, type SourceFile } from "ts-morph";
+import { Node, Project, type SourceFile } from "ts-morph";
 import { z } from "zod";
 import {
   collectFunctions,
@@ -26,7 +27,14 @@ import {
   resolveFunction,
 } from "./functions";
 import { collectRoutes, routeGraph } from "./routes";
-import { isSourcePath, localCalls, ownSources, relativePath } from "./source";
+import {
+  isSourcePath,
+  localInvocations,
+  ownSources,
+  packageSpecifier,
+  relativePath,
+} from "./source";
+import { addTechnologies, detectedPackage } from "./technology";
 
 export const AnalyzerConfig = z.object({
   modules: z.record(z.string().min(1), z.string().min(1)).default({}),
@@ -127,19 +135,37 @@ export async function analyze(
     const id = edgeId(kind, from, to);
     edges.set(id, { id, kind, from, to });
   }
+  const directPackages = new Map<string, string[]>();
   for (const entry of functions.values()) {
     const body = entry.handler.getBody();
     if (!body) continue;
-    for (const call of localCalls(body)) {
-      const target = resolveFunction(call.getExpression(), functions);
-      if (target) addEdge("calls", entry.node.id, target.node.id);
+    const names = new Set<string>();
+    for (const call of localInvocations(body)) {
+      const expression = call.getExpression();
+      const technology = detectedPackage(expression);
+      if (technology) names.add(technology);
+      if (Node.isCallExpression(call)) {
+        const target = resolveFunction(expression, functions);
+        if (target) addEdge("calls", entry.node.id, target.node.id);
+      }
     }
+    addTechnologies(entry.node, names);
+    directPackages.set(entry.node.id, technologyNames(entry.node));
+  }
+  for (const edge of edges.values()) {
+    const caller = nodes.get(edge.from);
+    if (caller) addTechnologies(caller, directPackages.get(edge.to) ?? []);
   }
   for (const [source, from] of modules) {
+    const module = nodes.get(from);
     for (const entry of source.getImportDeclarations()) {
       const imported = entry.getModuleSpecifierSourceFile();
       const to = imported && modules.get(imported);
       if (to && to !== from) addEdge("depends", from, to);
+      if (!to && module && !entry.isTypeOnly()) {
+        const name = packageSpecifier(entry.getModuleSpecifierValue());
+        if (name) addTechnologies(module, [name]);
+      }
     }
   }
   const routes = routeGraph(

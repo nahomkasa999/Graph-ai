@@ -12,7 +12,10 @@
     "format": "biome format --write .",
     "typecheck": "tsc -p tsconfig.json",
     "test": "vitest run --exclude \"**/fixtures/**\" --exclude \"**/browser/**\"",
-    "test:ui": "playwright test --config browser/playwright.config.ts"
+    "test:ui": "playwright test --config browser/playwright.config.ts",
+    "demo": "node packages/cli/dist/index.js dev examples/notes-app",
+    "demo:traced": "pnpm --filter @flowlens/notes-app start:traced",
+    "demo:traffic": "pnpm --filter @flowlens/notes-app traffic"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.0",

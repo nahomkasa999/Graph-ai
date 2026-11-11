@@ -18,7 +18,7 @@ const SourceQuery = z.object({
 export interface ServerOptions {
   port?: number;
   viewerDir?: string;
-  startCommand?: string;
+  startCommand?: string | (() => string);
   onError?: (error: unknown) => void;
 }
 
@@ -81,8 +81,12 @@ export async function createFlowlensApp(
       return c.text("Flowlens viewer has not been built", 503);
     try {
       let page = await readFile(join(options.viewerDir, "index.html"), "utf8");
-      if (options.startCommand) {
-        const value = options.startCommand
+      const command =
+        typeof options.startCommand === "function"
+          ? options.startCommand()
+          : options.startCommand;
+      if (command) {
+        const value = command
           .replaceAll("&", "&amp;")
           .replaceAll('"', "&quot;")
           .replaceAll("<", "&lt;");

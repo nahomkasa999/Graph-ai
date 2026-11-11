@@ -1,0 +1,26 @@
+{
+  "name": "@flowlens/cli",
+  "version": "0.1.0",
+  "license": "MIT",
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=22.18.0"
+  },
+  "bin": {
+    "flowlens": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --clean"
+  },
+  "dependencies": {
+    "@flowlens/analyzer": "workspace:*",
+    "@flowlens/server": "workspace:*",
+    "@flowlens/tracer": "workspace:*",
+    "@flowlens/viewer": "workspace:*",
+    "commander": "^14.0.3",
+    "zod": "^4.0.0"
+  }
+}

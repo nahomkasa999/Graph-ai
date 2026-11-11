@@ -13,6 +13,7 @@
     "build": "vite build"
   },
   "dependencies": {
+    "@dev.icons/react": "^1.3.0",
     "@flowlens/core": "workspace:*",
     "@xyflow/react": "^12.12.1",
     "elkjs": "^0.12.1",
@@ -24,5 +25,8 @@
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
     "vite": "^8.0.0"
+  },
+  "engines": {
+    "node": ">=22.18.0"
   }
 }

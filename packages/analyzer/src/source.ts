@@ -8,6 +8,8 @@ export function relativePath(root: string, file: string) {
 export function isSourcePath(file: string) {
   return (
     !file.startsWith("../") &&
+    !file.startsWith("/") &&
+    !/^[a-z]:\//i.test(file) &&
     !file
       .split("/")
       .some((part) =>
@@ -43,7 +45,8 @@ export function rootExpression(node: Expression): Expression {
   if (
     Node.isPropertyAccessExpression(expression) ||
     Node.isElementAccessExpression(expression) ||
-    Node.isCallExpression(expression)
+    Node.isCallExpression(expression) ||
+    Node.isNewExpression(expression)
   )
     return rootExpression(expression.getExpression());
   return expression;
@@ -66,7 +69,10 @@ export function importedFrom(node: Expression) {
 }
 
 export function packageName(node: Expression) {
-  const source = importedFrom(node);
+  return packageSpecifier(importedFrom(node));
+}
+
+export function packageSpecifier(source?: string) {
   if (
     !source ||
     source.startsWith(".") ||
@@ -85,9 +91,10 @@ export function expressionName(node: Expression) {
   return node.getText();
 }
 
-export function localCalls(node: Node) {
+export function localInvocations(node: Node) {
   const calls = [];
-  if (Node.isCallExpression(node)) calls.push(node);
+  if (Node.isCallExpression(node) || Node.isNewExpression(node))
+    calls.push(node);
   node.forEachDescendant((child, traversal) => {
     if (
       Node.isFunctionLikeDeclaration(child) ||
@@ -97,9 +104,14 @@ export function localCalls(node: Node) {
       traversal.skip();
       return;
     }
-    if (Node.isCallExpression(child)) calls.push(child);
+    if (Node.isCallExpression(child) || Node.isNewExpression(child))
+      calls.push(child);
   });
   return calls;
+}
+
+export function localCalls(node: Node) {
+  return localInvocations(node).filter(Node.isCallExpression);
 }
 
 export function ownSources(files: SourceFile[], root: string) {

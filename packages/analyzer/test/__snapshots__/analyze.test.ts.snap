@@ -48,6 +48,9 @@ exports[`graphs the express-basic fixture 1`] = `
         "handlerId": "fn:src/items/handler.ts#readItem",
         "method": "GET",
         "path": "/items/:id",
+        "technologies": [
+          "express",
+        ],
       },
       "parentId": "mod:src/items",
       "range": {
@@ -86,7 +89,11 @@ exports[`graphs the express-basic fixture 1`] = `
       "kind": "module",
       "label": "root",
       "level": 0,
-      "meta": {},
+      "meta": {
+        "technologies": [
+          "express",
+        ],
+      },
       "parentId": null,
     },
     {
@@ -94,7 +101,11 @@ exports[`graphs the express-basic fixture 1`] = `
       "kind": "module",
       "label": "items",
       "level": 0,
-      "meta": {},
+      "meta": {
+        "technologies": [
+          "express",
+        ],
+      },
       "parentId": null,
     },
     {
@@ -212,6 +223,9 @@ exports[`graphs the hono-basic fixture 1`] = `
         "handlerId": null,
         "method": "GET",
         "path": "/notes",
+        "technologies": [
+          "hono",
+        ],
       },
       "parentId": "mod:src/notes",
       "range": {
@@ -276,7 +290,11 @@ exports[`graphs the hono-basic fixture 1`] = `
       "kind": "module",
       "label": "root",
       "level": 0,
-      "meta": {},
+      "meta": {
+        "technologies": [
+          "hono",
+        ],
+      },
       "parentId": null,
     },
     {
@@ -284,7 +302,12 @@ exports[`graphs the hono-basic fixture 1`] = `
       "kind": "module",
       "label": "notes",
       "level": 0,
-      "meta": {},
+      "meta": {
+        "technologies": [
+          "hono",
+          "node:path",
+        ],
+      },
       "parentId": null,
     },
     {
@@ -296,6 +319,9 @@ exports[`graphs the hono-basic fixture 1`] = `
       "meta": {
         "external": "node:path",
         "order": 1,
+        "technologies": [
+          "node:path",
+        ],
       },
       "parentId": "feat:GET /notes",
       "range": {

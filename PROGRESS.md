@@ -15,3 +15,7 @@
   GitHub Actions passed on Node 22.18 and 24. The browser suite passed on Node 22.18.
 - M5: Live stats, node and edge pulses, error markers, recent traces, trace replay, duration breakdown and SSE reconnect.
   Chromium verified six live badges, a real validation error, trace replay, stats after reload and automatic reconnect.
+  GitHub Actions passed on Node 22.18 and 24, including the live browser suite.
+- M6: CLI, quick start, contributor guide, animated demo and release packaging checks.
+  Added offline technology icons for Pinecone, database drivers and frameworks. Verified Pinecone detection through SDK client variables, SQLite on the demo graph and the generic database icon.
+  All six npm publish dry-runs passed. Package manifests use release versions and include the MIT license.

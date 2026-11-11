@@ -14,3 +14,6 @@
 - Show canonical functions in a module with no routes, so database and audit modules remain navigable at system level.
 - Playwright's configuration uses its required default export. Library entry points remain named exports.
 - Load ELK's worker as a local build asset to keep layered layout off the browser's UI thread.
+- The CLI prints an absolute tracer file URL and the exact collector URL. The target project can start with tracing without a separate dependency install.
+- Pack with pnpm before the npm dry-run so the published manifests contain real version references in place of `workspace:*`.
+- Bundle selected Devicons React components for Pinecone, database clients and frameworks. Infer technologies from imports, local client initializers and direct project calls. The viewer uses a generic database icon for database paths without a recognized brand.

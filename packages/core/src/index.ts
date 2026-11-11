@@ -87,3 +87,10 @@ export const stepId = (feature: string, name: string) =>
   `step:${feature.slice(5)}#${name}`;
 export const edgeId = (kind: GraphEdge["kind"], from: string, to: string) =>
   `${kind}:${from.length}:${from}${to}`;
+
+export function technologyNames(node: GraphNode): string[] {
+  const value = node.meta.technologies;
+  return Array.isArray(value)
+    ? value.filter((item): item is string => typeof item === "string")
+    : [];
+}
