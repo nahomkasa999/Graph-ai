@@ -1,5 +1,8 @@
 {
-  "formatter": { "indentStyle": "space", "indentWidth": 2 },
+  "formatter": {
+    "indentStyle": "space",
+    "indentWidth": 2
+  },
   "files": {
     "includes": [
       "**",
@@ -8,5 +11,10 @@
       "!**/test-results",
       "!**/playwright-report"
     ]
+  },
+  "css": {
+    "parser": {
+      "tailwindDirectives": true
+    }
   }
 }

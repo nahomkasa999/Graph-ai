@@ -20,3 +20,4 @@
   Added offline technology icons for Pinecone, database drivers and frameworks. Verified Pinecone detection through SDK client variables, SQLite on the demo graph and the generic database icon.
   All six npm publish dry-runs passed. Package manifests use release versions and include the MIT license.
 - npm release: Moved the workspace to `@nazs` and added a manual workflow to stage the six public packages.
+- 0.2.0: Added shadcn node cards with purpose and source summaries, interactive CLI setup, managed tracing, and the `--skills` guide.

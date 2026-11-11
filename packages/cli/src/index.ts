@@ -1,14 +1,16 @@
 #!/usr/bin/env node
 
-import { realpath, writeFile } from "node:fs/promises";
-import { dirname, join, resolve } from "node:path";
+import { realpath } from "node:fs/promises";
+import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { analyze, watchProject } from "@nazs/flowlens-analyzer";
 import { serveFlowlens } from "@nazs/flowlens-server";
 import { Command } from "commander";
 import { z } from "zod";
 import manifest from "../package.json" with { type: "json" };
-import { entryFor, tracedCommand } from "./command";
+import { entryFor, startTracedApp, tracedCommand } from "./command";
+import { initialize, readSetup } from "./setup";
+import { skills } from "./skills";
 
 const print = (message: string) => process.stdout.write(`${message}\n`);
 const warn = (error: unknown) =>
@@ -31,52 +33,47 @@ function waitForSignal() {
   });
 }
 
-async function buildGraph(root: string) {
+async function buildGraph(root: string, report = true) {
   const start = performance.now();
   const graph = await analyze(root, { onWarning: warn });
-  print(
-    `Analyzed ${graph.nodes.length} nodes and ${graph.edges.length} edges in ${Math.round(performance.now() - start)} ms.`,
-  );
+  if (report)
+    print(
+      `Analyzed ${graph.nodes.length} nodes and ${graph.edges.length} edges in ${Math.round(performance.now() - start)} ms.`,
+    );
 }
 
-function watchGraph(root: string) {
+function watchGraph(root: string, report = true) {
   return watchProject(root, {
     onWarning: warn,
     onError: warn,
-    onGraph: (graph) =>
-      print(
-        `Updated graph with ${graph.nodes.length} nodes and ${graph.edges.length} edges.`,
-      ),
+    onGraph: report
+      ? (graph) =>
+          print(
+            `Updated graph with ${graph.nodes.length} nodes and ${graph.edges.length} edges.`,
+          )
+      : undefined,
   });
 }
 
 const program = new Command()
   .name("flowlens")
   .description("Explore a TypeScript backend with live request traces")
-  .version(manifest.version);
+  .version(manifest.version)
+  .option("--skills", "Print Flowlens guidance for AI agents")
+  .action((options: { skills?: boolean }) => {
+    if (options.skills) print(skills.trimEnd());
+    else program.outputHelp();
+  });
 
 program
   .command("init [directory]")
-  .description("Create a Flowlens config")
-  .action(async (directory?: string) => {
-    const root = await rootPath(directory);
-    const config = join(root, "flowlens.config.json");
-    try {
-      await writeFile(config, '{\n  "modules": {}\n}\n', { flag: "wx" });
-      print(`Created ${config}`);
-    } catch (error) {
-      if (
-        !(
-          error &&
-          typeof error === "object" &&
-          "code" in error &&
-          error.code === "EEXIST"
-        )
-      )
-        throw error;
-      print(`Using existing ${config}`);
-    }
-  });
+  .description("Set up Flowlens and choose an app entry for tracing")
+  .option("--entry <file>", "Configure the app entry without prompting")
+  .action(
+    async (directory: string | undefined, options: { entry?: string }) => {
+      print(await initialize(await rootPath(directory), options.entry));
+    },
+  );
 
 program
   .command("analyze [directory]")
@@ -100,7 +97,7 @@ program
 program
   .command("dev [directory]")
   .description("Analyze the project and serve the local viewer")
-  .option("--entry <file>", "App entry file used in the traced start command")
+  .option("--entry <file>", "Override the app entry file")
   .option("--port <port>", "Viewer port", "4777")
   .action(
     async (
@@ -109,12 +106,14 @@ program
     ) => {
       const root = await rootPath(directory);
       const port = Port.parse(options.port);
-      const entry = await entryFor(root, options.entry);
+      const setup = await readSetup(root);
+      const entry = await entryFor(root, options.entry ?? setup?.entry);
+      const launch = Boolean(setup?.entry);
       const viewerDir = dirname(
         fileURLToPath(import.meta.resolve("@nazs/flowlens-viewer/index.html")),
       );
-      await buildGraph(root);
-      let command = tracedCommand(root, entry, port);
+      await buildGraph(root, false);
+      let command: string | undefined;
       const server = await serveFlowlens(root, {
         port,
         viewerDir,
@@ -122,14 +121,18 @@ program
         onError: warn,
       });
       let stopWatching: (() => void) | undefined;
+      let stopApp: (() => Promise<void>) | undefined;
       try {
-        command = tracedCommand(root, entry, server.port);
-        stopWatching = watchGraph(root);
-        print(`Flowlens at http://127.0.0.1:${server.port}`);
-        print(`Start your app with tracing in another terminal:\n${command}`);
+        stopWatching = watchGraph(root, false);
+        if (entry) {
+          if (launch) stopApp = startTracedApp(root, entry, server.port, warn);
+          else command = tracedCommand(root, entry, server.port);
+        }
+        print(`http://127.0.0.1:${server.port}`);
         await waitForSignal();
       } finally {
         stopWatching?.();
+        await stopApp?.();
         await server.close();
       }
     },

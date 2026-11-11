@@ -13,9 +13,7 @@ export function TracePanel({
   const replaying = useLive((state) => state.replaying);
   const selected = traces.find(({ traceId }) => traceId === selectedId);
   const unmapped = selected?.spans.filter((span) => !span.nodeId) ?? [];
-  const command =
-    document.body.dataset.startCommand ??
-    "node --import @nazs/flowlens-tracer/register src/index.ts";
+  const command = document.body.dataset.startCommand;
   return (
     <section className="trace-panel" aria-label="Recent traces">
       <div className="trace-heading">
@@ -29,9 +27,11 @@ export function TracePanel({
       {!traces.length && (
         <>
           <p className="muted">
-            Start your app with tracing to see requests here.
+            {command
+              ? "Start your app with tracing to see requests here."
+              : "Incoming traces appear here."}
           </p>
-          <code>{command}</code>
+          {command && <code>{command}</code>}
         </>
       )}
       {!!traces.length && (

@@ -87,3 +87,17 @@ test("shows technology logos and a generic database icon on graph nodes", async 
     canvas.getByRole("img", { name: "Database", exact: true }),
   ).toBeVisible();
 });
+
+test("shows what a step calls and where its code lives on the node", async ({
+  page,
+}) => {
+  await page.goto("/#/feat:POST%20/notes");
+  const card = page
+    .getByRole("region", { name: "Code graph" })
+    .locator("[data-slot=card]")
+    .filter({ hasText: "validate note input" });
+  await expect(card.getByText("Calls validateNoteInput().")).toBeVisible();
+  await expect(card.locator("[data-slot=card-footer]")).toContainText(
+    "routes.ts:",
+  );
+});

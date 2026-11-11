@@ -56,19 +56,22 @@ The graph refreshes as source files change. Live OpenTelemetry spans add duratio
 
 ## Use it on your project
 
-After building Flowlens, run the CLI from this repo. Point it at the directory containing your project's `tsconfig.json` and set `--entry` to your app's entry file.
+After the 0.2.0 npm release, run these from the directory containing your project's `tsconfig.json`.
 
 ```sh
-node packages/cli/dist/index.js dev /path/to/project --entry src/index.ts
+npx @nazs/flowlens@0.2.0 init
+npx @nazs/flowlens@0.2.0 dev
 ```
 
-Run the traced start command printed by `dev` in a separate terminal. Restart the traced app after adding or renaming an instrumented function so its loader can read the updated manifest.
+Choose your Node app entry during `init` to have `dev` start it with tracing. Enter `-` to explore the graph on its own. Open the URL printed by `dev`. Stop the viewer and its managed app with Ctrl+C. Restart after adding or renaming an instrumented function.
 
-| Command                        | What it does                                                        |
-| ------------------------------ | ------------------------------------------------------------------- |
-| `init <project>`               | Create a Flowlens config                                            |
-| `analyze <project>`            | Write `.flowlens/graph.json` and `.flowlens/instrument.json`        |
-| `dev <project> --entry <file>` | Analyze the project, start the local viewer, and watch source files |
+To try these commands from a built clone, replace `npx @nazs/flowlens@0.2.0` with `node /path/to/Graph-ai/packages/cli/dist/index.js`. Use `--skills` to print a guide for an AI coding agent.
+
+| Command             | What it does                                                        |
+| ------------------- | ------------------------------------------------------------------- |
+| `init [project]`    | Choose an app entry and save the project setup                      |
+| `analyze [project]` | Write `.flowlens/graph.json` and `.flowlens/instrument.json`        |
+| `dev [project]`     | Start the viewer, watch source files, and launch the configured app |
 
 ## Supported in v1
 

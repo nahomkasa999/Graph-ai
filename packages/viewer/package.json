@@ -1,6 +1,6 @@
 {
   "name": "@nazs/flowlens-viewer",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "license": "MIT",
   "type": "module",
   "files": [
@@ -22,8 +22,10 @@
     "zustand": "^5.1.0"
   },
   "devDependencies": {
+    "@tailwindcss/vite": "^4.3.5",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
+    "tailwindcss": "^4.3.5",
     "vite": "^8.0.0"
   },
   "engines": {

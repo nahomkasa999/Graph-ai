@@ -48,7 +48,12 @@ export function collectFunctions(
         parentId,
         file,
         range: sourceRange(declaration),
-        meta: {},
+        meta: {
+          signature: `${handler.isAsync() ? "async " : ""}${name}(${handler
+            .getParameters()
+            .map((parameter) => parameter.getName())
+            .join(", ")})`,
+        },
       },
     });
   };

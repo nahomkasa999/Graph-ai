@@ -19,11 +19,8 @@
   background: #ffebef;
 }
 .node-error {
-  position: absolute;
-  width: 9px;
+  flex: 0 0 9px;
   height: 9px;
-  right: 9px;
-  bottom: 9px;
   border-radius: 50%;
   background: #d13351;
 }

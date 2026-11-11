@@ -49,12 +49,8 @@ test("dev serves the viewer, prints a valid port and watches source edits", asyn
   child.stdout?.on("data", (chunk: Buffer) => {
     output += chunk.toString();
   });
-  child.stderr?.on("data", (chunk: Buffer) => {
-    output += chunk.toString();
-  });
   try {
-    const readPort = () =>
-      /Flowlens at http:\/\/127\.0\.0\.1:(\d+)/.exec(output)?.[1];
+    const readPort = () => /^http:\/\/127\.0\.0\.1:(\d+)\n$/.exec(output)?.[1];
     await expect.poll(readPort, { timeout: 6000 }).toBeTruthy();
     const port = readPort();
     if (!port) throw Error(output);
@@ -65,7 +61,7 @@ test("dev serves the viewer, prints a valid port and watches source edits", asyn
     expect(html).toContain("data-start-command");
     expect(html).toContain(`${base}/v1/traces`);
     expect(html).toContain("node --import");
-    expect(output).toContain("node --import");
+    expect(output).toBe(`${base}\n`);
     const source = join(root, "src/items/handler.ts");
     await writeFile(
       source,
@@ -76,6 +72,7 @@ test("dev serves the viewer, prints a valid port and watches source edits", asyn
         timeout: 5000,
       })
       .toContain("#watched");
+    expect(output).toBe(`${base}\n`);
   } finally {
     if (child.exitCode === null && child.signalCode === null) {
       const done = new Promise<void>((finish) =>
@@ -84,6 +81,66 @@ test("dev serves the viewer, prints a valid port and watches source edits", asyn
       child.kill();
       await done;
     }
+    await rm(root, { recursive: true, force: true });
+  }
+}, 15_000);
+
+test("prints guidance for AI agents", async () => {
+  const result = await run("--skills");
+  expect(result.stdout).toMatch(/^---\nname: flowlens\n/);
+  expect(result.stdout).toContain("flowlens dev");
+  expect(result.stdout).toContain("/api/graph");
+});
+
+test("init configures a traced app and dev keeps its output off stdout", async () => {
+  const root = await mkdtemp(join(tmpdir(), "flowlens managed "));
+  try {
+    await writeFile(join(root, "package.json"), '{"type":"module"}');
+    await writeFile(
+      join(root, "tsconfig.json"),
+      '{"compilerOptions":{"allowJs":true},"include":["index.js"]}',
+    );
+    await writeFile(
+      join(root, "index.js"),
+      `
+      import { createServer } from "node:http";
+      const server = createServer((_request, response) => response.end("pong"));
+      server.listen(0, "127.0.0.1", () => {
+        process.stdout.write("APP_PORT=" + server.address().port + "\\n");
+      });
+    `,
+    );
+    await run("init", root, "--entry", "index.js");
+    const child = spawn(process.execPath, [cli, "dev", root, "--port", "0"]);
+    let stdout = "";
+    let stderr = "";
+    child.stdout.on("data", (chunk: Buffer) => {
+      stdout += chunk.toString();
+    });
+    child.stderr.on("data", (chunk: Buffer) => {
+      stderr += chunk.toString();
+    });
+    try {
+      await expect
+        .poll(() => /APP_PORT=\d+/.test(stderr), { timeout: 6000 })
+        .toBe(true);
+      expect(stdout).toMatch(/^http:\/\/127\.0\.0\.1:\d+\n$/);
+      const port = /APP_PORT=(\d+)/.exec(stderr)?.[1];
+      const response = await fetch(`http://127.0.0.1:${port}`);
+      expect(await response.text()).toBe("pong");
+      await expect
+        .poll(async () => (await fetch(`${stdout.trim()}/api/traces`)).text())
+        .toContain("GET");
+    } finally {
+      if (child.exitCode === null && child.signalCode === null) {
+        const done = new Promise<void>((finish) =>
+          child.once("exit", () => finish()),
+        );
+        child.kill();
+        await done;
+      }
+    }
+  } finally {
     await rm(root, { recursive: true, force: true });
   }
 }, 15_000);

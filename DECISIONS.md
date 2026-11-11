@@ -18,3 +18,5 @@
 - Pack with pnpm before the npm dry-run so the published manifests contain real version references in place of `workspace:*`.
 - Bundle selected Devicons React components for Pinecone, database clients and frameworks. Infer technologies from imports, local client initializers and direct project calls. The viewer uses a generic database icon for database paths without a recognized brand.
 - Publish the CLI as `@nazs/flowlens` and support packages as `@nazs/flowlens-*` so other projects can share the `@nazs` scope. Stage releases from GitHub Actions and use npm's 2FA approval to make them public.
+- Use shadcn/ui Card composition with Tailwind utilities scoped to the viewer build. Summaries come from graph relationships and declared function signatures.
+- Save the app entry during interactive CLI setup and use it to launch tracing from `dev`. Send the app's output and CLI diagnostics to stderr so stdout is a single viewer URL.

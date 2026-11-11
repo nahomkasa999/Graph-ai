@@ -8,12 +8,15 @@ import {
 import ELK from "elkjs/lib/elk-api.js";
 import workerUrl from "elkjs/lib/elk-worker.min.js?url";
 import { scope } from "./model";
+import { describeNodes, type NodeDetails } from "./node-details";
+import { stepHandles, wrapSteps } from "./step-layout";
 
 export type CardNode = Node<
   {
     node: GraphNode;
     group: string;
     open: boolean;
+    details: NodeDetails;
     stats?: NodeStats;
     tone?: "neutral" | "amber" | "red";
   },
@@ -28,8 +31,8 @@ export type Layout = {
 };
 
 const elk = new ELK({ workerUrl });
-const cardWidth = 188;
-const cardHeight = 96;
+const cardWidth = 228;
+const cardHeight = 142;
 const padding = 26;
 const cache = new Map<string, Map<string, XYPosition>>();
 
@@ -46,7 +49,7 @@ export async function layoutGraph(
   expanded: ReadonlySet<string>,
 ): Promise<Layout> {
   const visited = new Set(focus ? [focus] : []);
-  return layoutScope(graph, focus, expanded, visited, "");
+  return layoutScope(graph, focus, expanded, visited, "", describeNodes(graph));
 }
 
 async function layoutScope(
@@ -55,6 +58,7 @@ async function layoutScope(
   expanded: ReadonlySet<string>,
   visited: Set<string>,
   parent: string,
+  describe: ReturnType<typeof describeNodes>,
 ): Promise<Layout> {
   const group = scope(graph, focus);
   if (!group.length) return emptyLayout;
@@ -69,10 +73,11 @@ async function layoutScope(
             expanded,
             new Set([...visited, node.id]),
             id,
+            describe,
           )
         : emptyLayout;
       const width = Math.max(
-        node.kind === "step" ? 152 : cardWidth,
+        node.kind === "step" ? 183 : cardWidth,
         nested.width + padding * 2,
       );
       const height = nested.nodes.length
@@ -81,6 +86,7 @@ async function layoutScope(
       return { node, id, width, height, nested, open };
     }),
   );
+  const wrapped = group[0]?.kind === "step" ? wrapSteps(records) : undefined;
   const ids = new Map(records.map(({ node, id }) => [node.id, id]));
   const edges = graph.edges.flatMap((edge): CardEdge[] => {
     const source = ids.get(edge.from);
@@ -91,6 +97,9 @@ async function layoutScope(
         id: `${parent}/${edge.id}`,
         source,
         target,
+        sourceHandle: "out",
+        targetHandle: "in",
+        ...(wrapped ? stepHandles(wrapped, source, target) : {}),
         type: "smoothstep",
         data: { kind: edge.kind },
         markerEnd: { type: MarkerType.ArrowClosed, width: 13, height: 13 },
@@ -104,7 +113,7 @@ async function layoutScope(
     records.map(({ id, width, height }) => [id, width, height]),
     edges.map(({ id }) => id),
   ]);
-  let positions = cache.get(key);
+  let positions = wrapped ?? cache.get(key);
   if (!positions) {
     const layered = await elk.layout({
       id: "scope",
@@ -147,7 +156,7 @@ async function layoutScope(
       width,
       height,
       ariaLabel: node.label,
-      data: { node, group: parent, open },
+      data: { node, group: parent, open, details: describe(node) },
     });
     result.nodes.push(
       ...nested.nodes.map((child) =>

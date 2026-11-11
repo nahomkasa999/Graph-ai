@@ -18,7 +18,7 @@ const SourceQuery = z.object({
 export interface ServerOptions {
   port?: number;
   viewerDir?: string;
-  startCommand?: string | (() => string);
+  startCommand?: string | (() => string | undefined);
   onError?: (error: unknown) => void;
 }
 

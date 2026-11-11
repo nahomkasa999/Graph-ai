@@ -64,7 +64,9 @@ exports[`graphs the express-basic fixture 1`] = `
       "kind": "function",
       "label": "lookupItem",
       "level": 3,
-      "meta": {},
+      "meta": {
+        "signature": "lookupItem(id)",
+      },
       "parentId": "mod:src/items",
       "range": {
         "endLine": 8,
@@ -77,7 +79,9 @@ exports[`graphs the express-basic fixture 1`] = `
       "kind": "function",
       "label": "readItem",
       "level": 3,
-      "meta": {},
+      "meta": {
+        "signature": "readItem(req, res)",
+      },
       "parentId": "mod:src/items",
       "range": {
         "endLine": 6,
@@ -239,7 +243,9 @@ exports[`graphs the hono-basic fixture 1`] = `
       "kind": "function",
       "label": "helper",
       "level": 3,
-      "meta": {},
+      "meta": {
+        "signature": "helper(key)",
+      },
       "parentId": "mod:src/notes",
       "range": {
         "endLine": 8,
@@ -252,7 +258,9 @@ exports[`graphs the hono-basic fixture 1`] = `
       "kind": "function",
       "label": "readNote",
       "level": 3,
-      "meta": {},
+      "meta": {
+        "signature": "readNote(key, title)",
+      },
       "parentId": "mod:src/notes",
       "range": {
         "endLine": 5,
@@ -265,7 +273,9 @@ exports[`graphs the hono-basic fixture 1`] = `
       "kind": "function",
       "label": "skipNested",
       "level": 3,
-      "meta": {},
+      "meta": {
+        "signature": "skipNested()",
+      },
       "parentId": "mod:src/notes",
       "range": {
         "endLine": 11,
@@ -278,7 +288,9 @@ exports[`graphs the hono-basic fixture 1`] = `
       "kind": "function",
       "label": "toDto",
       "level": 3,
-      "meta": {},
+      "meta": {
+        "signature": "toDto(note)",
+      },
       "parentId": "mod:src/notes",
       "range": {
         "endLine": 1,

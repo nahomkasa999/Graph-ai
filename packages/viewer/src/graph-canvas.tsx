@@ -18,6 +18,13 @@ import {
   useState,
 } from "react";
 import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "./components/ui/card";
+import {
   type CardEdge,
   type CardNode,
   emptyLayout,
@@ -28,40 +35,96 @@ import { useView } from "./model";
 import { TechnologyIcons } from "./technology-icons";
 
 function GraphCard({ data, selected }: NodeProps<CardNode>) {
-  const { node, open, stats, tone } = data;
+  const { node, open, stats, tone, details } = data;
   const pulse = useLive((state) => state.pulses[node.id]);
   return (
-    <div
+    <Card
       className={`graph-card ${selected ? "is-selected" : ""} ${open ? "is-expanded" : ""}`}
       data-node-kind={node.kind}
       data-tone={tone}
     >
-      <Handle type="target" position={Position.Left} isConnectable={false} />
-      <div className="card-content">
-        <div className="card-kind">
-          <span className="kind-mark" />
-          {node.kind}
-          <TechnologyIcons node={node} />
-        </div>
-        <div className="card-title">{node.label}</div>
-        {stats && (
-          <div
-            className="node-stats"
-            data-testid="node-stats"
-            data-count={stats.count}
-            title={`p50 ${formatMs(stats.p50Ms)} · ${stats.count} spans`}
-          >
-            {formatMs(stats.p50Ms)} <span>· {stats.count}</span>
-          </div>
-        )}
-        {!!stats?.errorCount && (
-          <span
-            className="node-error"
-            role="img"
-            aria-label="Errors in recent spans"
-            data-testid="node-error"
+      <Handle
+        id="in"
+        type="target"
+        position={Position.Left}
+        isConnectable={false}
+      />
+      {node.kind === "step" && (
+        <>
+          <Handle
+            id="up"
+            type="target"
+            position={Position.Top}
+            isConnectable={false}
+            className="alternate-port"
           />
-        )}
+          <Handle
+            id="right"
+            type="target"
+            position={Position.Right}
+            isConnectable={false}
+            className="alternate-port"
+          />
+          <Handle
+            id="down"
+            type="source"
+            position={Position.Bottom}
+            isConnectable={false}
+            className="alternate-port"
+          />
+          <Handle
+            id="left"
+            type="source"
+            position={Position.Left}
+            isConnectable={false}
+            className="alternate-port"
+          />
+        </>
+      )}
+      <div className="card-content">
+        <CardHeader className="node-card-header">
+          <div className="card-kind">
+            <span className="kind-mark" />
+            {node.kind === "feature"
+              ? "Route"
+              : node.kind === "step" && typeof node.meta.order === "number"
+                ? `Step ${node.meta.order + 1}`
+                : node.kind}
+            <TechnologyIcons node={node} />
+          </div>
+          <CardTitle className="card-title" title={node.label}>
+            {node.label}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="node-card-summary">
+          <p title={details.summary}>{details.summary}</p>
+        </CardContent>
+        <CardFooter className="node-card-footer">
+          <span
+            className="node-card-source"
+            title={details.source ?? details.footer}
+          >
+            {details.footer}
+          </span>
+          {stats && (
+            <div
+              className="node-stats"
+              data-testid="node-stats"
+              data-count={stats.count}
+              title={`p50 ${formatMs(stats.p50Ms)} · ${stats.count} spans`}
+            >
+              {formatMs(stats.p50Ms)} <span>· {stats.count}</span>
+            </div>
+          )}
+          {!!stats?.errorCount && (
+            <span
+              className="node-error"
+              role="img"
+              aria-label="Errors in recent spans"
+              data-testid="node-error"
+            />
+          )}
+        </CardFooter>
       </div>
       {pulse && (
         <span
@@ -71,8 +134,13 @@ function GraphCard({ data, selected }: NodeProps<CardNode>) {
           aria-hidden="true"
         />
       )}
-      <Handle type="source" position={Position.Right} isConnectable={false} />
-    </div>
+      <Handle
+        id="out"
+        type="source"
+        position={Position.Right}
+        isConnectable={false}
+      />
+    </Card>
   );
 }
 
