@@ -1,0 +1,21 @@
+{
+  "name": "@flowlens/core",
+  "version": "0.1.0",
+  "license": "MIT",
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --dts --clean"
+  },
+  "dependencies": {
+    "zod": "^4.0.0"
+  }
+}

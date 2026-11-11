@@ -1,0 +1,12 @@
+{
+  "formatter": { "indentStyle": "space", "indentWidth": 2 },
+  "files": {
+    "includes": [
+      "**",
+      "!**/dist",
+      "!**/fixtures",
+      "!**/test-results",
+      "!**/playwright-report"
+    ]
+  }
+}

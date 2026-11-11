@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.flowlens/
+.flowlens-notes/
+coverage/
+playwright-report/
+test-results/
