@@ -1,44 +1,81 @@
-# Flowlens
+<h1 align="center">Flowlens</h1>
 
-![Flowlens demo showing a notes request light up its code graph](docs/demo.gif)
+<p align="center"><strong>Follow a request through your Node.js backend.</strong></p>
 
-Flowlens is a local development tool for TypeScript and JavaScript backends. It draws a graph of your modules, HTTP routes, steps, and functions. Live OpenTelemetry traces show which code ran, how long each step took, and where requests failed.
+<p align="center">
+  Turn a TypeScript or JavaScript project into a zoomable code graph.<br>
+  Watch requests light up the functions they call, see where time goes, and replay failures.
+</p>
+
+<p align="center">
+  <a href="https://github.com/nahomkasa999/Graph-ai/actions/workflows/ci.yml"><img src="https://github.com/nahomkasa999/Graph-ai/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI status"></a>
+  <br>
+  Node.js 22.18+ · pnpm 10 · <a href="LICENSE">MIT</a>
+</p>
+
+<p align="center">
+  <a href="#quick-start">Quick start</a> ·
+  <a href="#explore-a-request">Explore a request</a> ·
+  <a href="#use-it-on-your-project">Use it on your project</a> ·
+  <a href="CONTRIBUTING.md">Contribute</a>
+</p>
+
+<p align="center">
+  <img src="docs/demo.gif" width="900" alt="Flowlens opens the create-note route, highlights its live request trace, and shows timings for each step">
+</p>
 
 ## Quick start
 
-Use Node 22.18 or newer and pnpm 10. If Corepack is unavailable, install pnpm 10 and run the same commands without the `corepack` prefix.
+Clone the repo, build the workspace, and start the viewer.
 
 ```sh
 git clone https://github.com/nahomkasa999/Graph-ai.git
 cd Graph-ai
-corepack pnpm install --frozen-lockfile && corepack pnpm build
+corepack pnpm install --frozen-lockfile
+corepack pnpm build
 corepack pnpm demo
-# Open http://127.0.0.1:4777
 ```
 
-To see live traces, run `corepack pnpm demo:traced` in a second terminal, then `corepack pnpm demo:traffic` in a third. Set `DEMO_LATENCY=1` for the traced app to make the index and audit steps easier to see.
+Open [http://127.0.0.1:4777](http://127.0.0.1:4777) to see the notes app graph. If Corepack is unavailable, install pnpm 10 and run the same commands without the `corepack` prefix.
 
-Double-click a node to drill down. Shift-click expands it in place. Use the breadcrumb to go up, `/` to search, and the recent trace list to replay a request. Node icons identify detected technologies such as Pinecone, SQLite, PostgreSQL, and Redis.
+## Explore a request
+
+1. In a second terminal at the repo root, start the traced notes app with `corepack pnpm demo:traced`.
+2. In a third terminal, run `corepack pnpm demo:traffic` to generate requests for 60 seconds.
+3. Open the `notes` module, then double-click `POST /notes`. Watch the request move through validation, SQLite, search indexing, and the audit log. Click a recent trace to replay it and see each step's duration.
+
+| To do this                                        | Use this                        |
+| ------------------------------------------------- | ------------------------------- |
+| Drill from a module to a route, step, or function | Double-click a node             |
+| Expand a node in place                            | Shift-click                     |
+| Find a node by name                               | Press `/`                       |
+| Move up a level                                   | Use the breadcrumb or press Esc |
+| Inspect source or timings                         | Click a node                    |
+
+The graph refreshes as source files change. Live OpenTelemetry spans add durations and error markers to the graph. Nodes show icons for detected technologies such as Pinecone, SQLite, PostgreSQL, and Redis. To make the search indexing and audit steps easier to see in the demo, start the traced app with `DEMO_LATENCY=1`.
 
 ## Use it on your project
 
-After building this workspace, run the CLI against the directory containing your `tsconfig.json`.
+After building Flowlens, run the CLI from this repo. Point it at the directory containing your project's `tsconfig.json` and set `--entry` to your app's entry file.
 
 ```sh
-node packages/cli/dist/index.js init /path/to/project
-node packages/cli/dist/index.js analyze /path/to/project
 node packages/cli/dist/index.js dev /path/to/project --entry src/index.ts
 ```
 
-Run the traced start command printed by `dev` in a separate terminal. The viewer and OTLP receiver use the same loopback server. Analysis writes `.flowlens/graph.json` and `.flowlens/instrument.json`. Source changes refresh the graph in the viewer. Restart the traced app after adding or renaming an instrumented function so its loader reads the new manifest.
+Run the traced start command printed by `dev` in a separate terminal. Restart the traced app after adding or renaming an instrumented function so its loader can read the updated manifest.
 
-## v1 limitations
+| Command                        | What it does                                                        |
+| ------------------------------ | ------------------------------------------------------------------- |
+| `init <project>`               | Create a Flowlens config                                            |
+| `analyze <project>`            | Write `.flowlens/graph.json` and `.flowlens/instrument.json`        |
+| `dev <project> --entry <file>` | Analyze the project, start the local viewer, and watch source files |
 
-- Static analysis supports Hono and Express route registrations with literal paths and one level of router mounts. Handler steps come from top-level statements. Class methods, nested callbacks, and dynamic routes are outside the v1 analysis scope.
-- Runtime tracing supports native Node ESM with TypeScript or JavaScript. The `tsx` runner and CommonJS apps are outside the v1 runtime scope.
-- A step that only calls an external package has no function span and displays no duration.
-- Traces and rolling stats stay in memory until the local server stops. The viewer binds to `127.0.0.1`.
+## Supported in v1
 
-The technical spec, architecture decisions and milestone status are in [docs/SPEC.md](docs/SPEC.md), [DECISIONS.md](DECISIONS.md) and [PROGRESS.md](PROGRESS.md).
+- **Routes.** Hono and Express registrations with literal paths and one level of router mounts. The analyzer reads top-level handler statements. Class methods, nested callbacks, and dynamic routes are outside this scope.
+- **Tracing.** Native Node ESM with TypeScript or JavaScript. Steps that only call an external package display no duration.
+- **Storage.** The viewer and OTLP receiver share a port on `127.0.0.1`. Traces and rolling stats live in memory until the local server stops.
 
-Flowlens source is MIT licensed. The viewer uses [ELK.js](https://github.com/kieler/elkjs) for layered layout and ships its upstream worker as a local asset.
+## Contributing
+
+The pnpm workspace contains the CLI, analyzer, tracer, server, viewer, and shared graph contracts. The viewer uses ELK.js for layered layout. [Contributor guide](CONTRIBUTING.md) · [Technical spec](docs/SPEC.md) · [Design decisions](DECISIONS.md) · [Milestone progress](PROGRESS.md) · [ELK.js](https://github.com/kieler/elkjs)
