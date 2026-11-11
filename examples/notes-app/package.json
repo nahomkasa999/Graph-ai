@@ -1,0 +1,19 @@
+{
+  "name": "@flowlens/notes-app",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.ts",
+    "start:traced": "node --import @flowlens/tracer/register src/index.ts",
+    "traffic": "node scripts/traffic.ts"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.19.0",
+    "better-sqlite3": "^12.4.0",
+    "hono": "^4.13.17",
+    "zod": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.0"
+  }
+}
