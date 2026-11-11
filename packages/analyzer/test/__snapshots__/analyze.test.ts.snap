@@ -1,0 +1,358 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`graphs the express-basic fixture 1`] = `
+{
+  "edges": [
+    {
+      "from": "fn:src/items/handler.ts#readItem",
+      "id": "calls:32:fn:src/items/handler.ts#readItemfn:src/items/handler.ts#lookupItem",
+      "kind": "calls",
+      "to": "fn:src/items/handler.ts#lookupItem",
+    },
+    {
+      "from": "mod:src",
+      "id": "depends:7:mod:srcmod:src/items",
+      "kind": "depends",
+      "to": "mod:src/items",
+    },
+    {
+      "from": "step:GET /items/:id#lookup item",
+      "id": "flow:31:step:GET /items/:id#lookup itemstep:GET /items/:id#lookup item#2",
+      "kind": "flow",
+      "order": 2,
+      "to": "step:GET /items/:id#lookup item#2",
+    },
+    {
+      "from": "step:GET /items/:id#lookup item#2",
+      "id": "flow:33:step:GET /items/:id#lookup item#2step:GET /items/:id#send response",
+      "kind": "flow",
+      "order": 3,
+      "to": "step:GET /items/:id#send response",
+    },
+    {
+      "from": "step:GET /items/:id#receive request",
+      "id": "flow:35:step:GET /items/:id#receive requeststep:GET /items/:id#lookup item",
+      "kind": "flow",
+      "order": 1,
+      "to": "step:GET /items/:id#lookup item",
+    },
+  ],
+  "nodes": [
+    {
+      "file": "src/items/handler.ts",
+      "id": "feat:GET /items/:id",
+      "kind": "feature",
+      "label": "GET /items/:id",
+      "level": 1,
+      "meta": {
+        "handlerId": "fn:src/items/handler.ts#readItem",
+        "method": "GET",
+        "path": "/items/:id",
+      },
+      "parentId": "mod:src/items",
+      "range": {
+        "endLine": 6,
+        "startLine": 1,
+      },
+    },
+    {
+      "file": "src/items/handler.ts",
+      "id": "fn:src/items/handler.ts#lookupItem",
+      "kind": "function",
+      "label": "lookupItem",
+      "level": 3,
+      "meta": {},
+      "parentId": "mod:src/items",
+      "range": {
+        "endLine": 8,
+        "startLine": 8,
+      },
+    },
+    {
+      "file": "src/items/handler.ts",
+      "id": "fn:src/items/handler.ts#readItem",
+      "kind": "function",
+      "label": "readItem",
+      "level": 3,
+      "meta": {},
+      "parentId": "mod:src/items",
+      "range": {
+        "endLine": 6,
+        "startLine": 1,
+      },
+    },
+    {
+      "id": "mod:src",
+      "kind": "module",
+      "label": "root",
+      "level": 0,
+      "meta": {},
+      "parentId": null,
+    },
+    {
+      "id": "mod:src/items",
+      "kind": "module",
+      "label": "items",
+      "level": 0,
+      "meta": {},
+      "parentId": null,
+    },
+    {
+      "file": "src/items/handler.ts",
+      "id": "step:GET /items/:id#lookup item",
+      "kind": "step",
+      "label": "lookup item",
+      "level": 2,
+      "meta": {
+        "functionId": "fn:src/items/handler.ts#lookupItem",
+        "order": 1,
+      },
+      "parentId": "feat:GET /items/:id",
+      "range": {
+        "endLine": 3,
+        "startLine": 3,
+      },
+    },
+    {
+      "file": "src/items/handler.ts",
+      "id": "step:GET /items/:id#lookup item#2",
+      "kind": "step",
+      "label": "lookup item",
+      "level": 2,
+      "meta": {
+        "functionId": "fn:src/items/handler.ts#lookupItem",
+        "order": 2,
+      },
+      "parentId": "feat:GET /items/:id",
+      "range": {
+        "endLine": 4,
+        "startLine": 4,
+      },
+    },
+    {
+      "file": "src/items/handler.ts",
+      "id": "step:GET /items/:id#receive request",
+      "kind": "step",
+      "label": "receive request",
+      "level": 2,
+      "meta": {
+        "order": 0,
+      },
+      "parentId": "feat:GET /items/:id",
+      "range": {
+        "endLine": 6,
+        "startLine": 1,
+      },
+    },
+    {
+      "file": "src/items/handler.ts",
+      "id": "step:GET /items/:id#send response",
+      "kind": "step",
+      "label": "send response",
+      "level": 2,
+      "meta": {
+        "order": 3,
+      },
+      "parentId": "feat:GET /items/:id",
+      "range": {
+        "endLine": 5,
+        "startLine": 5,
+      },
+    },
+  ],
+  "warnings": [],
+}
+`;
+
+exports[`graphs the hono-basic fixture 1`] = `
+{
+  "edges": [
+    {
+      "from": "fn:src/notes/service.ts#readNote",
+      "id": "calls:32:fn:src/notes/service.ts#readNotefn:src/notes/service.ts#helper",
+      "kind": "calls",
+      "to": "fn:src/notes/service.ts#helper",
+    },
+    {
+      "from": "mod:src",
+      "id": "depends:7:mod:srcmod:src/notes",
+      "kind": "depends",
+      "to": "mod:src/notes",
+    },
+    {
+      "from": "step:GET /notes#join",
+      "id": "flow:20:step:GET /notes#joinstep:GET /notes#read note",
+      "kind": "flow",
+      "order": 2,
+      "to": "step:GET /notes#read note",
+    },
+    {
+      "from": "step:GET /notes#read note",
+      "id": "flow:25:step:GET /notes#read notestep:GET /notes#send response",
+      "kind": "flow",
+      "order": 3,
+      "to": "step:GET /notes#send response",
+    },
+    {
+      "from": "step:GET /notes#receive request",
+      "id": "flow:31:step:GET /notes#receive requeststep:GET /notes#join",
+      "kind": "flow",
+      "order": 1,
+      "to": "step:GET /notes#join",
+    },
+  ],
+  "nodes": [
+    {
+      "file": "src/notes/router.ts",
+      "id": "feat:GET /notes",
+      "kind": "feature",
+      "label": "GET /notes",
+      "level": 1,
+      "meta": {
+        "handlerId": null,
+        "method": "GET",
+        "path": "/notes",
+      },
+      "parentId": "mod:src/notes",
+      "range": {
+        "endLine": 11,
+        "startLine": 5,
+      },
+    },
+    {
+      "file": "src/notes/service.ts",
+      "id": "fn:src/notes/service.ts#helper",
+      "kind": "function",
+      "label": "helper",
+      "level": 3,
+      "meta": {},
+      "parentId": "mod:src/notes",
+      "range": {
+        "endLine": 8,
+        "startLine": 6,
+      },
+    },
+    {
+      "file": "src/notes/service.ts",
+      "id": "fn:src/notes/service.ts#readNote",
+      "kind": "function",
+      "label": "readNote",
+      "level": 3,
+      "meta": {},
+      "parentId": "mod:src/notes",
+      "range": {
+        "endLine": 5,
+        "startLine": 2,
+      },
+    },
+    {
+      "file": "src/notes/service.ts",
+      "id": "fn:src/notes/service.ts#skipNested",
+      "kind": "function",
+      "label": "skipNested",
+      "level": 3,
+      "meta": {},
+      "parentId": "mod:src/notes",
+      "range": {
+        "endLine": 11,
+        "startLine": 9,
+      },
+    },
+    {
+      "file": "src/notes/service.ts",
+      "id": "fn:src/notes/service.ts#toDto",
+      "kind": "function",
+      "label": "toDto",
+      "level": 3,
+      "meta": {},
+      "parentId": "mod:src/notes",
+      "range": {
+        "endLine": 1,
+        "startLine": 1,
+      },
+    },
+    {
+      "id": "mod:src",
+      "kind": "module",
+      "label": "root",
+      "level": 0,
+      "meta": {},
+      "parentId": null,
+    },
+    {
+      "id": "mod:src/notes",
+      "kind": "module",
+      "label": "notes",
+      "level": 0,
+      "meta": {},
+      "parentId": null,
+    },
+    {
+      "file": "src/notes/router.ts",
+      "id": "step:GET /notes#join",
+      "kind": "step",
+      "label": "join",
+      "level": 2,
+      "meta": {
+        "external": "node:path",
+        "order": 1,
+      },
+      "parentId": "feat:GET /notes",
+      "range": {
+        "endLine": 7,
+        "startLine": 7,
+      },
+    },
+    {
+      "file": "src/notes/router.ts",
+      "id": "step:GET /notes#read note",
+      "kind": "step",
+      "label": "read note",
+      "level": 2,
+      "meta": {
+        "functionId": "fn:src/notes/service.ts#readNote",
+        "order": 2,
+      },
+      "parentId": "feat:GET /notes",
+      "range": {
+        "endLine": 8,
+        "startLine": 8,
+      },
+    },
+    {
+      "file": "src/notes/router.ts",
+      "id": "step:GET /notes#receive request",
+      "kind": "step",
+      "label": "receive request",
+      "level": 2,
+      "meta": {
+        "order": 0,
+      },
+      "parentId": "feat:GET /notes",
+      "range": {
+        "endLine": 11,
+        "startLine": 5,
+      },
+    },
+    {
+      "file": "src/notes/router.ts",
+      "id": "step:GET /notes#send response",
+      "kind": "step",
+      "label": "send response",
+      "level": 2,
+      "meta": {
+        "functionId": "fn:src/notes/service.ts#toDto",
+        "order": 3,
+      },
+      "parentId": "feat:GET /notes",
+      "range": {
+        "endLine": 10,
+        "startLine": 10,
+      },
+    },
+  ],
+  "warnings": [
+    "Skipping non-literal route path at app.ts:6",
+  ],
+}
+`;
