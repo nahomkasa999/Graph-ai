@@ -7,3 +7,7 @@
 - Keep the analyzer free of runtime hooks. The loader consumes the instrument manifest, the server owns trace-to-node mapping, and the viewer reads graph and trace state through HTTP and SSE.
 - Use bounded synchronous delay for the opt-in demo latency so the create handler keeps the specified one-call-per-statement shape. No delay runs by default.
 - Share Zod with the demo for input, SQLite rows and traffic response validation. Use the matching SQLite type declarations for strict TypeScript.
+- Use the SDK's current `@opentelemetry/sdk-trace` batch processor, Node HTTP instrumentation and JSON exporter. Their companion packages are required to configure the specified protocol and sampling delay.
+- The server recognizes legacy HTTP semantic attributes as well as the current names. HTTP 4xx responses appear as failed requests in Flowlens, including when the HTTP instrumentation leaves span status unset.
+- Keep a per-trace mapper across split OTLP batches so an early span can be assigned to a step when its request span arrives, without counting that function twice.
+- Enable always-on sampling for the local viewer regardless of ambient OpenTelemetry sampling settings. Trigger the SDK's built-in HTTP hooks before the ESM app starts, so named imports and wrapped functions share a request context.

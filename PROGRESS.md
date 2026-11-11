@@ -6,3 +6,6 @@
   The 60-second traffic run sent 295 requests with 16 expected validation errors.
   GitHub Actions passed on Node 22.18 and 24.
 - M2: Hono and Express analysis, instrument manifest, graph snapshots, deterministic output and a debounced watcher. The notes graph analyzed in 715 ms with 52 nodes and 38 edges.
+  GitHub Actions passed on Node 22.18 and 24.
+- M3: Node HTTP and function tracing, local server, SSE, rolling stats, source API and real-process integration tests.
+  The real notes request mapped all six function steps and delivered the completion event 119 ms after the response.
