@@ -18,3 +18,7 @@ jobs:
       - run: pnpm lint
       - run: pnpm typecheck
       - run: pnpm test
+      - if: matrix.node == '22.18.0'
+        run: pnpm exec playwright install --with-deps --only-shell chromium
+      - if: matrix.node == '22.18.0'
+        run: pnpm test:ui

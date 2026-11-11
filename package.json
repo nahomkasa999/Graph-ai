@@ -11,13 +11,15 @@
     "lint": "biome ci .",
     "format": "biome format --write .",
     "typecheck": "tsc -p tsconfig.json",
-    "test": "vitest run --exclude \"**/fixtures/**\" --exclude \"**/browser/**\""
+    "test": "vitest run --exclude \"**/fixtures/**\" --exclude \"**/browser/**\"",
+    "test:ui": "playwright test --config browser/playwright.config.ts"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.0",
     "@types/node": "^22.18.0",
     "tsup": "^8.5.0",
     "typescript": "~5.9.3",
-    "vitest": "^4.0.0"
+    "vitest": "^4.0.0",
+    "@playwright/test": "^1.65.0"
   }
 }

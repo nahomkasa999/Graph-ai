@@ -5,6 +5,7 @@
     "packages/*/test/*.ts",
     "examples/**/*.ts",
     "*.config.ts",
-    "tests/**/*.ts"
+    "tests/**/*.ts",
+    "browser/**/*.ts"
   ]
 }

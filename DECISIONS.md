@@ -11,3 +11,6 @@
 - The server recognizes legacy HTTP semantic attributes as well as the current names. HTTP 4xx responses appear as failed requests in Flowlens, including when the HTTP instrumentation leaves span status unset.
 - Keep a per-trace mapper across split OTLP batches so an early span can be assigned to a step when its request span arrives, without counting that function twice.
 - Enable always-on sampling for the local viewer regardless of ambient OpenTelemetry sampling settings. Trigger the SDK's built-in HTTP hooks before the ESM app starts, so named imports and wrapped functions share a request context.
+- Show canonical functions in a module with no routes, so database and audit modules remain navigable at system level.
+- Playwright's configuration uses its required default export. Library entry points remain named exports.
+- Load ELK's worker as a local build asset to keep layered layout off the browser's UI thread.

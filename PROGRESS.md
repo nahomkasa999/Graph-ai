@@ -9,3 +9,6 @@
   GitHub Actions passed on Node 22.18 and 24.
 - M3: Node HTTP and function tracing, local server, SSE, rolling stats, source API and real-process integration tests.
   The real notes request mapped all six function steps and delivered the completion event 119 ms after the response.
+  GitHub Actions passed on Node 22.18 and 24.
+- M4: Production React Flow viewer with ELK layout, four focus levels, inline expansion, URL navigation, keyboard search and source inspection.
+  Playwright verified four-level hash navigation, source display, browser history, inline expansion and keyboard search.
